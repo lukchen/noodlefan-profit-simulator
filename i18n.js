@@ -69,6 +69,11 @@
       "s8.amortMonths": "Spread over (months)",
       "s8.includeStartup": "Include amortized startup cost in monthly P&L",
 
+      "tab.menu": "Menu",
+      "tab.channels": "Channels",
+      "tab.costs": "Costs",
+      "tab.startup": "Startup",
+
       resetBtn: "Reset to defaults",
 
       "results.title": "Monthly P&L Summary",
@@ -164,6 +169,11 @@
       "s8.smallwares": "小型用具/杂项 ($)",
       "s8.amortMonths": "分摊月数",
       "s8.includeStartup": "在月度利润表中计入分摊的启动成本",
+
+      "tab.menu": "菜单",
+      "tab.channels": "渠道",
+      "tab.costs": "成本",
+      "tab.startup": "启动",
 
       resetBtn: "恢复默认值",
 

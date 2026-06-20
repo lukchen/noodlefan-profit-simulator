@@ -13,193 +13,211 @@
         <span class="brand-en">NoodleFan</span>
         <span class="brand-cn">粉面王</span>
       </div>
-      <div class="lang-switch" role="group" aria-label="Language">
-        <button type="button" class="lang-btn" data-lang="en">EN</button>
-        <button type="button" class="lang-btn" data-lang="zh">中文</button>
+      <div class="topbar-right">
+        <button id="resetBtn" class="reset-btn" data-i18n="resetBtn">Reset to defaults</button>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" class="lang-btn" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="zh">中文</button>
+        </div>
       </div>
     </div>
     <div class="subtitle" data-i18n="subtitle">Delivery &amp; Pickup Profit Simulator — CloudKitchens Boston</div>
   </header>
 
   <main class="layout">
+
     <!-- ============ INPUT COLUMN ============ -->
     <section class="inputs">
+      <nav class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-tab="menu"     data-i18n="tab.menu">菜单</button>
+        <button class="tab-btn"        data-tab="channels" data-i18n="tab.channels">渠道</button>
+        <button class="tab-btn"        data-tab="costs"    data-i18n="tab.costs">成本</button>
+        <button class="tab-btn"        data-tab="startup"  data-i18n="tab.startup">启动</button>
+      </nav>
 
-      <div class="card">
-        <h2 data-i18n="s1.title">1. Operating Schedule</h2>
-        <div class="field">
-          <label for="daysPerWeek" data-i18n="s1.daysPerWeek">Days open per week</label>
-          <input type="number" id="daysPerWeek" value="7" min="1" max="7" step="1" />
-        </div>
-      </div>
+      <div class="tab-panels">
 
-      <div class="card">
-        <h2 data-i18n="sm.title">2. Menu &amp; Daily Sales Mix</h2>
-        <p class="hint" data-i18n="sm.hint">Set the selling price, ingredient cost, and expected daily orders for each dish.</p>
-        <table class="menu-table">
-          <thead>
-            <tr>
-              <th data-i18n="sm.col.dish">Dish</th>
-              <th data-i18n="sm.col.price">Price ($)</th>
-              <th data-i18n="sm.col.cost">Cost ($)</th>
-              <th data-i18n="sm.col.qty">Orders/Day</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td data-i18n="sm.dish1">Tianjin Yellow Broth Ramen 天津黄汤拉面</td>
-              <td><input type="number" id="dish1Price" value="16" min="0" step="0.5" /></td>
-              <td><input type="number" id="dish1Cost"  value="4"  min="0" step="0.5" /></td>
-              <td><input type="number" id="dish1Qty"   value="15" min="0" step="1"   /></td>
-            </tr>
-            <tr>
-              <td data-i18n="sm.dish2">Taiwanese Beef Noodle 台式牛肉面</td>
-              <td><input type="number" id="dish2Price" value="16" min="0" step="0.5" /></td>
-              <td><input type="number" id="dish2Cost"  value="4"  min="0" step="0.5" /></td>
-              <td><input type="number" id="dish2Qty"   value="10" min="0" step="1"   /></td>
-            </tr>
-            <tr>
-              <td data-i18n="sm.dish3">Jiangxi Fried Rice Noodle 江西炒粉</td>
-              <td><input type="number" id="dish3Price" value="15" min="0" step="0.5" /></td>
-              <td><input type="number" id="dish3Cost"  value="3"  min="0" step="0.5" /></td>
-              <td><input type="number" id="dish3Qty"   value="10" min="0" step="1"   /></td>
-            </tr>
-            <tr>
-              <td data-i18n="sm.dish4">Jiangxi Three Delicacies Noodle 江西三鲜泡粉</td>
-              <td><input type="number" id="dish4Price" value="13" min="0" step="0.5" /></td>
-              <td><input type="number" id="dish4Cost"  value="2"  min="0" step="0.5" /></td>
-              <td><input type="number" id="dish4Qty"   value="8"  min="0" step="1"   /></td>
-            </tr>
-            <tr>
-              <td data-i18n="sm.dish5">Jiangxi Beef Rice Noodle 江西牛肉粉</td>
-              <td><input type="number" id="dish5Price" value="16" min="0" step="0.5" /></td>
-              <td><input type="number" id="dish5Cost"  value="4"  min="0" step="0.5" /></td>
-              <td><input type="number" id="dish5Qty"   value="8"  min="0" step="1"   /></td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr class="menu-totals-row">
-              <td data-i18n="sm.blended">Blended</td>
-              <td><span data-i18n="sm.aovLabel">AOV:</span> <strong id="menu-aov">—</strong></td>
-              <td><span data-i18n="sm.cogsLabel">Food cost:</span> <strong id="menu-cogs-pct">—</strong></td>
-              <td><strong id="menu-total-qty">40</strong> <span data-i18n="sm.perDay">/day</span></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2 data-i18n="s2.title">2. Order Channel Mix</h2>
-        <p class="hint" data-i18n="s2.hint">Percent of orders through each channel — should total 100%.</p>
-        <div class="channel-row">
-          <label data-i18n="channel.pickup">Direct Pickup (call-in / walk-up, no app)</label>
-          <div class="dual">
-            <input type="number" id="pctPickup" value="25" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commPickup" value="2.6" min="0" max="100" step="0.1" /> <span data-i18n="dual.ccfee">% CC fee</span>
+      <!-- TAB: Menu -->
+      <div class="tab-panel active" id="tab-menu">
+        <div class="card">
+          <div class="field">
+            <label for="daysPerWeek" data-i18n="s1.daysPerWeek">Days open per week</label>
+            <input type="number" id="daysPerWeek" value="7" min="1" max="7" step="1" />
           </div>
         </div>
-        <div class="channel-row">
-          <label data-i18n="channel.doordash">DoorDash</label>
-          <div class="dual">
-            <input type="number" id="pctDoorDash" value="40" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commDoorDash" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+        <div class="card">
+          <h2 data-i18n="sm.title">Menu &amp; Daily Sales Mix</h2>
+          <p class="hint" data-i18n="sm.hint">Set the selling price, ingredient cost, and expected daily orders for each dish.</p>
+          <table class="menu-table">
+            <thead>
+              <tr>
+                <th data-i18n="sm.col.dish">Dish</th>
+                <th data-i18n="sm.col.price">Price ($)</th>
+                <th data-i18n="sm.col.cost">Cost ($)</th>
+                <th data-i18n="sm.col.qty">Orders/Day</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td data-i18n="sm.dish1">Tianjin Yellow Broth Ramen 天津黄汤拉面</td>
+                <td><input type="number" id="dish1Price" value="16" min="0" step="0.5" /></td>
+                <td><input type="number" id="dish1Cost"  value="4"  min="0" step="0.5" /></td>
+                <td><input type="number" id="dish1Qty"   value="15" min="0" step="1"   /></td>
+              </tr>
+              <tr>
+                <td data-i18n="sm.dish2">Taiwanese Beef Noodle 台式牛肉面</td>
+                <td><input type="number" id="dish2Price" value="16" min="0" step="0.5" /></td>
+                <td><input type="number" id="dish2Cost"  value="4"  min="0" step="0.5" /></td>
+                <td><input type="number" id="dish2Qty"   value="10" min="0" step="1"   /></td>
+              </tr>
+              <tr>
+                <td data-i18n="sm.dish3">Jiangxi Fried Rice Noodle 江西炒粉</td>
+                <td><input type="number" id="dish3Price" value="15" min="0" step="0.5" /></td>
+                <td><input type="number" id="dish3Cost"  value="3"  min="0" step="0.5" /></td>
+                <td><input type="number" id="dish3Qty"   value="10" min="0" step="1"   /></td>
+              </tr>
+              <tr>
+                <td data-i18n="sm.dish4">Jiangxi Three Delicacies Noodle 江西三鲜泡粉</td>
+                <td><input type="number" id="dish4Price" value="13" min="0" step="0.5" /></td>
+                <td><input type="number" id="dish4Cost"  value="2"  min="0" step="0.5" /></td>
+                <td><input type="number" id="dish4Qty"   value="8"  min="0" step="1"   /></td>
+              </tr>
+              <tr>
+                <td data-i18n="sm.dish5">Jiangxi Beef Rice Noodle 江西牛肉粉</td>
+                <td><input type="number" id="dish5Price" value="16" min="0" step="0.5" /></td>
+                <td><input type="number" id="dish5Cost"  value="4"  min="0" step="0.5" /></td>
+                <td><input type="number" id="dish5Qty"   value="8"  min="0" step="1"   /></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="menu-totals-row">
+                <td data-i18n="sm.blended">Blended</td>
+                <td><span data-i18n="sm.aovLabel">AOV:</span> <strong id="menu-aov">—</strong></td>
+                <td><span data-i18n="sm.cogsLabel">Food cost:</span> <strong id="menu-cogs-pct">—</strong></td>
+                <td><strong id="menu-total-qty">40</strong> <span data-i18n="sm.perDay">/day</span></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB: Channels -->
+      <div class="tab-panel" id="tab-channels">
+        <div class="card">
+          <h2 data-i18n="s2.title">Order Channel Mix</h2>
+          <p class="hint" data-i18n="s2.hint">Percent of orders through each channel — should total 100%.</p>
+          <div class="channel-row">
+            <label data-i18n="channel.pickup">Direct Pickup (call-in / walk-up, no app)</label>
+            <div class="dual">
+              <input type="number" id="pctPickup" value="25" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
+              <input type="number" id="commPickup" value="2.6" min="0" max="100" step="0.1" /> <span data-i18n="dual.ccfee">% CC fee</span>
+            </div>
+          </div>
+          <div class="channel-row">
+            <label data-i18n="channel.doordash">DoorDash</label>
+            <div class="dual">
+              <input type="number" id="pctDoorDash" value="40" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
+              <input type="number" id="commDoorDash" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            </div>
+          </div>
+          <div class="channel-row">
+            <label data-i18n="channel.ubereats">Uber Eats</label>
+            <div class="dual">
+              <input type="number" id="pctUberEats" value="30" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
+              <input type="number" id="commUberEats" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            </div>
+          </div>
+          <div class="channel-row">
+            <label data-i18n="channel.grubhub">Grubhub</label>
+            <div class="dual">
+              <input type="number" id="pctGrubhub" value="15" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
+              <input type="number" id="commGrubhub" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            </div>
+          </div>
+          <div class="mix-total">
+            <span data-i18n="mix.total">Channel mix total:</span> <span id="mixTotal">100</span>%
+            <span id="mixWarning" class="warn"></span>
           </div>
         </div>
-        <div class="channel-row">
-          <label data-i18n="channel.ubereats">Uber Eats</label>
-          <div class="dual">
-            <input type="number" id="pctUberEats" value="30" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commUberEats" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+      </div>
+
+      <!-- TAB: Costs -->
+      <div class="tab-panel" id="tab-costs">
+        <div class="card">
+          <h2 data-i18n="s3.title">Kitchen Rent &amp; Utilities</h2>
+          <div class="field">
+            <label for="rent" data-i18n="s3.rent">Monthly rent ($)</label>
+            <input type="number" id="rent" value="6500" min="0" step="50" />
+          </div>
+          <div class="field">
+            <label for="utilities" data-i18n="s3.utilities">Utilities / CAM fees ($/mo)</label>
+            <input type="number" id="utilities" value="0" min="0" step="25" />
+          </div>
+          <p class="hint" data-i18n="s3.hint">CloudKitchens doesn't publish list pricing — these are placeholder estimates for a small Boston ghost-kitchen unit. Replace with your actual quote.</p>
+        </div>
+        <div class="card">
+          <h2 data-i18n="s5.title">Packaging</h2>
+          <div class="field">
+            <label for="packagingPerOrder" data-i18n="s5.packaging">Packaging cost per order ($)</label>
+            <input type="number" id="packagingPerOrder" value="0.60" min="0" step="0.05" />
           </div>
         </div>
-        <div class="channel-row">
-          <label data-i18n="channel.grubhub">Grubhub</label>
-          <div class="dual">
-            <input type="number" id="pctGrubhub" value="15" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commGrubhub" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+        <div class="card">
+          <h2 data-i18n="s6.title">Labor</h2>
+          <div class="field">
+            <label for="numStaff" data-i18n="s6.numStaff">Number of staff</label>
+            <input type="number" id="numStaff" value="0" min="0" step="1" />
+          </div>
+          <div class="field">
+            <label for="hourlyWage" data-i18n="s6.hourlyWage">Avg hourly wage ($)</label>
+            <input type="number" id="hourlyWage" value="18" min="0" step="0.5" />
+          </div>
+          <div class="field">
+            <label for="hoursPerWeek" data-i18n="s6.hoursPerWeek">Hours/week per staff</label>
+            <input type="number" id="hoursPerWeek" value="35" min="0" step="1" />
+          </div>
+          <p class="hint" data-i18n="s6.hint">Treated as a fixed monthly cost (scheduled regardless of order volume).</p>
+        </div>
+        <div class="card">
+          <h2 data-i18n="s7.title">Marketing &amp; Promo</h2>
+          <div class="field">
+            <label for="marketingMonthly" data-i18n="s7.marketing">Monthly marketing spend ($)</label>
+            <input type="number" id="marketingMonthly" value="200" min="0" step="25" />
           </div>
         </div>
-        <div class="mix-total">
-          <span data-i18n="mix.total">Channel mix total:</span> <span id="mixTotal">100</span>%
-          <span id="mixWarning" class="warn"></span>
-        </div>
       </div>
 
-      <div class="card">
-        <h2 data-i18n="s3.title">3. Kitchen Rent &amp; Utilities (CloudKitchens)</h2>
-        <div class="field">
-          <label for="rent" data-i18n="s3.rent">Monthly rent ($)</label>
-          <input type="number" id="rent" value="6500" min="0" step="50" />
-        </div>
-        <div class="field">
-          <label for="utilities" data-i18n="s3.utilities">Utilities / CAM fees ($/mo)</label>
-          <input type="number" id="utilities" value="0" min="0" step="25" />
-        </div>
-        <p class="hint" data-i18n="s3.hint">CloudKitchens doesn't publish list pricing — these are placeholder estimates for a small Boston ghost-kitchen unit. Replace with your actual quote.</p>
-      </div>
-
-      <div class="card">
-        <h2 data-i18n="s5.title">5. Packaging</h2>
-        <div class="field">
-          <label for="packagingPerOrder" data-i18n="s5.packaging">Packaging cost per order ($)</label>
-          <input type="number" id="packagingPerOrder" value="0.60" min="0" step="0.05" />
-        </div>
-      </div>
-
-      <div class="card">
-        <h2 data-i18n="s6.title">6. Labor</h2>
-        <div class="field">
-          <label for="numStaff" data-i18n="s6.numStaff">Number of staff</label>
-          <input type="number" id="numStaff" value="0" min="0" step="1" />
-        </div>
-        <div class="field">
-          <label for="hourlyWage" data-i18n="s6.hourlyWage">Avg hourly wage ($)</label>
-          <input type="number" id="hourlyWage" value="18" min="0" step="0.5" />
-        </div>
-        <div class="field">
-          <label for="hoursPerWeek" data-i18n="s6.hoursPerWeek">Hours/week per staff</label>
-          <input type="number" id="hoursPerWeek" value="35" min="0" step="1" />
-        </div>
-        <p class="hint" data-i18n="s6.hint">Treated as a fixed monthly cost (scheduled regardless of order volume).</p>
-      </div>
-
-      <div class="card">
-        <h2 data-i18n="s7.title">7. Marketing &amp; Promo</h2>
-        <div class="field">
-          <label for="marketingMonthly" data-i18n="s7.marketing">Monthly marketing spend ($)</label>
-          <input type="number" id="marketingMonthly" value="200" min="0" step="25" />
+      <!-- TAB: Startup -->
+      <div class="tab-panel" id="tab-startup">
+        <div class="card">
+          <h2 data-i18n="s8.title">One-Time Startup Costs</h2>
+          <div class="field">
+            <label for="equipmentCost" data-i18n="s8.equipment">Kitchen equipment ($)</label>
+            <input type="number" id="equipmentCost" value="4000" min="0" step="100" />
+          </div>
+          <div class="field">
+            <label for="permitsCost" data-i18n="s8.permits">Permits &amp; licenses ($)</label>
+            <input type="number" id="permitsCost" value="0" min="0" step="50" />
+          </div>
+          <div class="field">
+            <label for="initialInventoryCost" data-i18n="s8.inventory">Initial inventory ($)</label>
+            <input type="number" id="initialInventoryCost" value="1000" min="0" step="50" />
+          </div>
+          <div class="field">
+            <label for="smallwaresCost" data-i18n="s8.smallwares">Smallwares / misc ($)</label>
+            <input type="number" id="smallwaresCost" value="500" min="0" step="50" />
+          </div>
+          <div class="field">
+            <label for="amortMonths" data-i18n="s8.amortMonths">Spread over (months)</label>
+            <input type="number" id="amortMonths" value="12" min="1" step="1" />
+          </div>
+          <div class="field checkbox-field">
+            <input type="checkbox" id="includeStartup" checked />
+            <label for="includeStartup" data-i18n="s8.includeStartup">Include amortized startup cost in monthly P&amp;L</label>
+          </div>
         </div>
       </div>
-
-      <div class="card">
-        <h2 data-i18n="s8.title">8. One-Time Startup Costs</h2>
-        <div class="field">
-          <label for="equipmentCost" data-i18n="s8.equipment">Kitchen equipment ($)</label>
-          <input type="number" id="equipmentCost" value="4000" min="0" step="100" />
-        </div>
-        <div class="field">
-          <label for="permitsCost" data-i18n="s8.permits">Permits &amp; licenses ($)</label>
-          <input type="number" id="permitsCost" value="0" min="0" step="50" />
-        </div>
-        <div class="field">
-          <label for="initialInventoryCost" data-i18n="s8.inventory">Initial inventory ($)</label>
-          <input type="number" id="initialInventoryCost" value="1000" min="0" step="50" />
-        </div>
-        <div class="field">
-          <label for="smallwaresCost" data-i18n="s8.smallwares">Smallwares / misc ($)</label>
-          <input type="number" id="smallwaresCost" value="500" min="0" step="50" />
-        </div>
-        <div class="field">
-          <label for="amortMonths" data-i18n="s8.amortMonths">Spread over (months)</label>
-          <input type="number" id="amortMonths" value="12" min="1" step="1" />
-        </div>
-        <div class="field checkbox-field">
-          <input type="checkbox" id="includeStartup" checked />
-          <label for="includeStartup" data-i18n="s8.includeStartup">Include amortized startup cost in monthly P&amp;L</label>
-        </div>
-      </div>
-
-      <button id="resetBtn" class="reset-btn" data-i18n="resetBtn">Reset to defaults</button>
+      </div><!-- /tab-panels -->
     </section>
 
     <!-- ============ RESULTS COLUMN ============ -->
@@ -210,12 +228,12 @@
           <tbody>
             <tr><td data-i18n="pl.revenue">Revenue</td><td id="out-revenue">$0</td></tr>
             <tr><td data-i18n="pl.cogs">Food cost (COGS)</td><td id="out-cogs">$0</td></tr>
-            <tr><td data-i18n="pl.platform">Delivery platform fees</td><td id="out-platform">$0</td></tr>
+            <tr><td data-i18n="pl.platform">Platform fees</td><td id="out-platform">$0</td></tr>
             <tr><td data-i18n="pl.packaging">Packaging</td><td id="out-packaging">$0</td></tr>
             <tr><td data-i18n="pl.labor">Labor</td><td id="out-labor">$0</td></tr>
             <tr><td data-i18n="pl.rent">Rent &amp; utilities</td><td id="out-rent">$0</td></tr>
             <tr><td data-i18n="pl.marketing">Marketing</td><td id="out-marketing">$0</td></tr>
-            <tr><td data-i18n="pl.startup">Startup cost (amortized)</td><td id="out-startup">$0</td></tr>
+            <tr><td data-i18n="pl.startup">Startup (amortized)</td><td id="out-startup">$0</td></tr>
             <tr class="total-row"><td data-i18n="pl.netprofit">Net profit / month</td><td id="out-netprofit">$0</td></tr>
             <tr><td data-i18n="pl.margin">Net margin</td><td id="out-margin">0%</td></tr>
             <tr><td data-i18n="pl.orders">Orders / month</td><td id="out-orders">0</td></tr>
@@ -223,21 +241,20 @@
           </tbody>
         </table>
       </div>
-
       <div class="card">
         <h2 data-i18n="chart.breakdownTitle">Cost Breakdown</h2>
-        <canvas id="breakdownChart" height="260"></canvas>
+        <canvas id="breakdownChart"></canvas>
       </div>
-
       <div class="card">
         <h2 data-i18n="chart.sensitivityTitle">Profit vs. Order Volume</h2>
-        <canvas id="sensitivityChart" height="260"></canvas>
+        <canvas id="sensitivityChart"></canvas>
       </div>
     </section>
+
   </main>
 
   <footer class="footer" data-i18n="footer">
-    NoodleFan Profit Simulator — built for evaluating a CloudKitchens Boston (delivery + pickup only) launch. All figures are editable estimates; verify rent and fees with your actual contracts.
+    NoodleFan Profit Simulator — built for evaluating a CloudKitchens Boston launch. All figures are editable estimates.
   </footer>
 
   <script src="chart.umd.min.js"></script>
