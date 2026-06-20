@@ -22,6 +22,7 @@
       "channel.grubhub": "Grubhub",
       "dual.pct": "% of orders",
       "dual.fee": "% fee",
+      "dual.ccfee": "% CC fee",
       "mix.total": "Channel mix total:",
       "mix.warning": "(should total 100%)",
 
@@ -103,6 +104,7 @@
       "channel.grubhub": "Grubhub",
       "dual.pct": "% 订单占比",
       "dual.fee": "% 手续费",
+      "dual.ccfee": "% 刷卡手续费",
       "mix.total": "渠道占比总计：",
       "mix.warning": "（总和应为 100%）",
 

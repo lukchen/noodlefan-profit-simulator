@@ -48,28 +48,28 @@
           <label data-i18n="channel.pickup">Direct Pickup (call-in / walk-up, no app)</label>
           <div class="dual">
             <input type="number" id="pctPickup" value="15" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commPickup" value="0" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            <input type="number" id="commPickup" value="2.6" min="0" max="100" step="0.1" /> <span data-i18n="dual.ccfee">% CC fee</span>
           </div>
         </div>
         <div class="channel-row">
           <label data-i18n="channel.doordash">DoorDash</label>
           <div class="dual">
             <input type="number" id="pctDoorDash" value="40" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commDoorDash" value="25" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            <input type="number" id="commDoorDash" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
           </div>
         </div>
         <div class="channel-row">
           <label data-i18n="channel.ubereats">Uber Eats</label>
           <div class="dual">
             <input type="number" id="pctUberEats" value="30" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commUberEats" value="25" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            <input type="number" id="commUberEats" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
           </div>
         </div>
         <div class="channel-row">
           <label data-i18n="channel.grubhub">Grubhub</label>
           <div class="dual">
             <input type="number" id="pctGrubhub" value="15" min="0" max="100" step="1" /> <span data-i18n="dual.pct">% of orders</span>
-            <input type="number" id="commGrubhub" value="20" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
+            <input type="number" id="commGrubhub" value="30" min="0" max="100" step="0.5" /> <span data-i18n="dual.fee">% fee</span>
           </div>
         </div>
         <div class="mix-total">
@@ -82,11 +82,11 @@
         <h2 data-i18n="s3.title">3. Kitchen Rent &amp; Utilities (CloudKitchens)</h2>
         <div class="field">
           <label for="rent" data-i18n="s3.rent">Monthly rent ($)</label>
-          <input type="number" id="rent" value="2200" min="0" step="50" />
+          <input type="number" id="rent" value="6500" min="0" step="50" />
         </div>
         <div class="field">
           <label for="utilities" data-i18n="s3.utilities">Utilities / CAM fees ($/mo)</label>
-          <input type="number" id="utilities" value="300" min="0" step="25" />
+          <input type="number" id="utilities" value="0" min="0" step="25" />
         </div>
         <p class="hint" data-i18n="s3.hint">CloudKitchens doesn't publish list pricing — these are placeholder estimates for a small Boston ghost-kitchen unit. Replace with your actual quote.</p>
       </div>
@@ -137,11 +137,11 @@
         <h2 data-i18n="s8.title">8. One-Time Startup Costs</h2>
         <div class="field">
           <label for="equipmentCost" data-i18n="s8.equipment">Kitchen equipment ($)</label>
-          <input type="number" id="equipmentCost" value="8000" min="0" step="100" />
+          <input type="number" id="equipmentCost" value="4000" min="0" step="100" />
         </div>
         <div class="field">
           <label for="permitsCost" data-i18n="s8.permits">Permits &amp; licenses ($)</label>
-          <input type="number" id="permitsCost" value="1500" min="0" step="50" />
+          <input type="number" id="permitsCost" value="0" min="0" step="50" />
         </div>
         <div class="field">
           <label for="initialInventoryCost" data-i18n="s8.inventory">Initial inventory ($)</label>
@@ -149,7 +149,7 @@
         </div>
         <div class="field">
           <label for="smallwaresCost" data-i18n="s8.smallwares">Smallwares / misc ($)</label>
-          <input type="number" id="smallwaresCost" value="800" min="0" step="50" />
+          <input type="number" id="smallwaresCost" value="500" min="0" step="50" />
         </div>
         <div class="field">
           <label for="amortMonths" data-i18n="s8.amortMonths">Spread over (months)</label>
