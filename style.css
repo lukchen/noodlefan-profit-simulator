@@ -280,6 +280,41 @@ body {
 #out-netprofit.positive { color: var(--good); }
 #out-netprofit.negative { color: var(--bad); }
 
+/* ── PLATFORM PRICE GUIDE ── */
+.price-guide-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 8px;
+}
+.price-guide-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 420px;
+}
+.price-guide-table th {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+  padding: 4px 6px 7px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.price-guide-table th:first-child,
+.price-guide-table th:nth-child(2) { text-align: left; }
+.price-guide-table td {
+  padding: 5px 6px;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.price-guide-table td.pg-channel { text-align: left; font-weight: 600; white-space: nowrap; }
+.price-guide-table td.pg-fee     { text-align: left; color: var(--muted); white-space: nowrap; }
+.price-guide-table tr:first-child td { background: rgba(0,0,0,0.02); }
+.price-guide-table tr:first-child td.pg-channel { color: var(--good); }
+.pg-note { margin-top: 8px; }
+
 /* ── CHARTS ── */
 canvas { max-width: 100%; }
 

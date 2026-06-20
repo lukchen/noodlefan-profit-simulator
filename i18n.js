@@ -74,6 +74,15 @@
       "tab.costs": "Costs",
       "tab.startup": "Startup",
 
+      "pg.title": "Platform Price Guide",
+      "pg.hint": "Recommended consumer-facing prices on each platform so the restaurant nets the same base price after commission. Formula: base ÷ (1 − fee%).",
+      "pg.col.channel": "Channel",
+      "pg.col.fee": "Fee",
+      "pg.col.price": "Listed Price",
+      "pg.col.youget": "You Net",
+      "pg.direct": "Direct (own site / phone)",
+      "pg.note": "Set these prices in each platform's menu editor.",
+
       resetBtn: "Reset to defaults",
 
       "results.title": "Monthly P&L Summary",
@@ -174,6 +183,15 @@
       "tab.channels": "渠道",
       "tab.costs": "成本",
       "tab.startup": "启动",
+
+      "pg.title": "各平台定价参考",
+      "pg.hint": "各渠道建议售价，确保扣除平台抽成后到手价与直营售价相同。计算公式：直营价 ÷ (1 − 抽成%)",
+      "pg.col.channel": "渠道",
+      "pg.col.fee": "抽成",
+      "pg.col.price": "消费者看到的价格",
+      "pg.col.youget": "商家到手",
+      "pg.direct": "直营（本店官网 / 电话）",
+      "pg.note": "请按此定价在各平台后台设置菜单价格。",
 
       resetBtn: "恢复默认值",
 

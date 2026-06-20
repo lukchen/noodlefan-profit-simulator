@@ -253,6 +253,58 @@ function renderSensitivityChart(v) {
   }
 }
 
+function renderPlatformPrices(v) {
+  const t = window.NoodleI18N.t;
+  const dishes = getDishes(v);
+  const dishKeys = ["sm.dish1","sm.dish2","sm.dish3","sm.dish4","sm.dish5"];
+
+  // Update dish column headers (short: last Chinese segment)
+  dishKeys.forEach((key, i) => {
+    const el = $("pg-dish" + (i+1) + "-name");
+    if (el) {
+      const full = t(key);
+      // Use Chinese portion if bilingual (after last space), else full
+      const parts = full.split(" ");
+      el.textContent = parts[parts.length - 1] || full;
+    }
+  });
+
+  const channels = [
+    { key: "pg.direct",        fee: v.commPickup   / 100, isCCfee: true  },
+    { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false },
+    { key: "channel.ubereats", fee: v.commUberEats / 100, isCCfee: false },
+    { key: "channel.grubhub",  fee: v.commGrubhub  / 100, isCCfee: false },
+  ];
+
+  const tbody = $("priceGuideBody");
+  tbody.innerHTML = "";
+
+  channels.forEach(ch => {
+    const tr = document.createElement("tr");
+    const fmtFee = ch.isCCfee
+      ? (ch.fee * 100).toFixed(1) + "% CC"
+      : (ch.fee * 100).toFixed(0) + "%";
+    // For direct (CC fee only), listed price = base price; you net = base*(1-ccfee)
+    // For platforms, listed price = base/(1-fee) so you net = base
+    const cells = [
+      `<td class="pg-channel">${t(ch.key).split("(")[0].trim()}</td>`,
+      `<td class="pg-fee">${fmtFee}</td>`,
+    ];
+    dishes.forEach(d => {
+      if (d.price <= 0) {
+        cells.push(`<td>—</td>`);
+      } else if (ch.isCCfee) {
+        cells.push(`<td>$${d.price.toFixed(2)}</td>`);
+      } else {
+        const listed = d.price / (1 - ch.fee);
+        cells.push(`<td>$${listed.toFixed(2)}</td>`);
+      }
+    });
+    tr.innerHTML = cells.join("");
+    tbody.appendChild(tr);
+  });
+}
+
 function recalc() {
   const v = readInputs();
   updateMixWarning(v);
@@ -262,6 +314,7 @@ function recalc() {
   renderResults(pl, breakEvenDay);
   renderBreakdownChart(pl);
   renderSensitivityChart(v);
+  renderPlatformPrices(v);
   saveToStorage(v);
 }
 
