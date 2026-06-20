@@ -26,19 +26,66 @@
     <section class="inputs">
 
       <div class="card">
-        <h2 data-i18n="s1.title">1. Order Volume</h2>
-        <div class="field">
-          <label for="ordersPerDay" data-i18n="s1.ordersPerDay">Orders per day</label>
-          <input type="number" id="ordersPerDay" value="40" min="0" step="1" />
-        </div>
+        <h2 data-i18n="s1.title">1. Operating Schedule</h2>
         <div class="field">
           <label for="daysPerWeek" data-i18n="s1.daysPerWeek">Days open per week</label>
           <input type="number" id="daysPerWeek" value="7" min="1" max="7" step="1" />
         </div>
-        <div class="field">
-          <label for="aov" data-i18n="s1.aov">Average order value ($)</label>
-          <input type="number" id="aov" value="20" min="0" step="0.5" />
-        </div>
+      </div>
+
+      <div class="card">
+        <h2 data-i18n="sm.title">2. Menu &amp; Daily Sales Mix</h2>
+        <p class="hint" data-i18n="sm.hint">Set the selling price, ingredient cost, and expected daily orders for each dish.</p>
+        <table class="menu-table">
+          <thead>
+            <tr>
+              <th data-i18n="sm.col.dish">Dish</th>
+              <th data-i18n="sm.col.price">Price ($)</th>
+              <th data-i18n="sm.col.cost">Cost ($)</th>
+              <th data-i18n="sm.col.qty">Orders/Day</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="sm.dish1">Tianjin Yellow Broth Ramen 天津黄汤拉面</td>
+              <td><input type="number" id="dish1Price" value="16" min="0" step="0.5" /></td>
+              <td><input type="number" id="dish1Cost"  value="4"  min="0" step="0.5" /></td>
+              <td><input type="number" id="dish1Qty"   value="8"  min="0" step="1"   /></td>
+            </tr>
+            <tr>
+              <td data-i18n="sm.dish2">Taiwanese Beef Noodle 台式牛肉面</td>
+              <td><input type="number" id="dish2Price" value="16" min="0" step="0.5" /></td>
+              <td><input type="number" id="dish2Cost"  value="4"  min="0" step="0.5" /></td>
+              <td><input type="number" id="dish2Qty"   value="8"  min="0" step="1"   /></td>
+            </tr>
+            <tr>
+              <td data-i18n="sm.dish3">Jiangxi Fried Rice Noodle 江西炒粉</td>
+              <td><input type="number" id="dish3Price" value="15" min="0" step="0.5" /></td>
+              <td><input type="number" id="dish3Cost"  value="3"  min="0" step="0.5" /></td>
+              <td><input type="number" id="dish3Qty"   value="8"  min="0" step="1"   /></td>
+            </tr>
+            <tr>
+              <td data-i18n="sm.dish4">Jiangxi Three Delicacies Noodle 江西三鲜泡粉</td>
+              <td><input type="number" id="dish4Price" value="13" min="0" step="0.5" /></td>
+              <td><input type="number" id="dish4Cost"  value="2"  min="0" step="0.5" /></td>
+              <td><input type="number" id="dish4Qty"   value="8"  min="0" step="1"   /></td>
+            </tr>
+            <tr>
+              <td data-i18n="sm.dish5">Jiangxi Beef Rice Noodle 江西牛肉粉</td>
+              <td><input type="number" id="dish5Price" value="16" min="0" step="0.5" /></td>
+              <td><input type="number" id="dish5Cost"  value="4"  min="0" step="0.5" /></td>
+              <td><input type="number" id="dish5Qty"   value="8"  min="0" step="1"   /></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="menu-totals-row">
+              <td data-i18n="sm.blended">Blended</td>
+              <td><span data-i18n="sm.aovLabel">AOV:</span> <strong id="menu-aov">—</strong></td>
+              <td><span data-i18n="sm.cogsLabel">Food cost:</span> <strong id="menu-cogs-pct">—</strong></td>
+              <td><strong id="menu-total-qty">40</strong> <span data-i18n="sm.perDay">/day</span></td>
+            </tr>
+          </tfoot>
+        </table>
       </div>
 
       <div class="card">
@@ -89,15 +136,6 @@
           <input type="number" id="utilities" value="0" min="0" step="25" />
         </div>
         <p class="hint" data-i18n="s3.hint">CloudKitchens doesn't publish list pricing — these are placeholder estimates for a small Boston ghost-kitchen unit. Replace with your actual quote.</p>
-      </div>
-
-      <div class="card">
-        <h2 data-i18n="s4.title">4. Food Cost (COGS)</h2>
-        <div class="field">
-          <label for="foodCostPct" data-i18n="s4.foodCostPct">Food cost (% of revenue)</label>
-          <input type="number" id="foodCostPct" value="25" min="0" max="100" step="1" />
-        </div>
-        <p class="hint" data-i18n="s4.hint">Typical noodle/rice-noodle restaurants run 28–35% COGS.</p>
       </div>
 
       <div class="card">
