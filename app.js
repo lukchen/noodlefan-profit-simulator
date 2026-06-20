@@ -203,7 +203,11 @@ function renderBreakdownChart(pl) {
     breakdownChart = new Chart(ctx, {
       type: "doughnut",
       data,
-      options: { plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } } },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } },
+      },
     });
   }
 }
@@ -240,6 +244,8 @@ function renderSensitivityChart(v) {
       type: "line",
       data,
       options: {
+        responsive: true,
+        maintainAspectRatio: true,
         plugins: { legend: { display: false } },
         scales: { y: { ticks: { callback: (val) => "$" + val.toLocaleString() } } },
       },

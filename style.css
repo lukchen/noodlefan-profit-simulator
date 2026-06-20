@@ -120,6 +120,7 @@ body {
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
+  white-space: nowrap;
   transition: color 0.15s, border-color 0.15s;
 }
 .tab-btn:hover { color: var(--text); }
@@ -279,6 +280,9 @@ body {
 #out-netprofit.positive { color: var(--good); }
 #out-netprofit.negative { color: var(--bad); }
 
+/* ── CHARTS ── */
+canvas { max-width: 100%; }
+
 /* ── FOOTER ── */
 .footer {
   text-align: center;
@@ -292,52 +296,56 @@ body {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 800px) {
-  body { overflow: auto; height: auto; }
-  .layout { grid-template-columns: 1fr; overflow: visible; }
-  .inputs { border-right: none; border-bottom: 1px solid var(--border); overflow: visible; }
-  .results { overflow: visible; }
-  .tab-panels { overflow: visible; height: auto; }
-  .tab-panel.active { display: block; }
+  /* Switch to natural scroll layout */
+  body        { overflow: auto; height: auto; }
+  .layout     { grid-template-columns: 1fr; overflow: visible; }
+  .inputs     { border-right: none; border-bottom: 1px solid var(--border); overflow: visible; height: auto; }
+  .results    { overflow: visible; }
+  .tab-panels { overflow: visible; height: auto; flex: none; }
+
+  /* Sticky tab bar so tabs are reachable while scrolling */
+  .tab-bar    { position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
 }
 
 @media (max-width: 600px) {
-  /* Topbar */
-  .topbar { padding: 10px 14px; }
-  .topbar-row { flex-wrap: wrap; gap: 8px; }
-  .brand-en { font-size: 18px; }
-  .brand-cn { font-size: 14px; }
-  .topbar-right { gap: 8px; }
-  .reset-btn { font-size: 11px; padding: 3px 10px; }
-  .lang-btn  { font-size: 11px; padding: 3px 10px; }
-  .subtitle  { font-size: 11px; }
+  /* ── Topbar ── */
+  .topbar         { padding: 10px 14px 8px; }
+  .topbar-row     { flex-wrap: wrap; gap: 6px; }
+  .brand-en       { font-size: 18px; }
+  .brand-cn       { font-size: 14px; }
+  .topbar-right   { gap: 8px; }
+  .reset-btn      { font-size: 11px; padding: 3px 10px; }
+  .lang-btn       { font-size: 11px; padding: 3px 9px; }
+  .subtitle       { font-size: 11px; }
 
-  /* Tab bar — fill full width */
-  .tab-bar { padding: 0 8px; }
-  .tab-btn { flex: 1; padding: 10px 6px; font-size: 12px; text-align: center; }
+  /* ── Tab bar — equal-width tabs ── */
+  .tab-bar        { padding: 0; }
+  .tab-btn        { flex: 1; padding: 11px 4px; font-size: 12px; text-align: center; min-width: 0; }
 
-  /* Cards */
-  .card { padding: 12px 12px; }
+  /* ── Cards ── */
+  .card           { padding: 12px; margin-bottom: 10px; }
 
-  /* Menu table — horizontal scroll */
+  /* ── Menu table — horizontal scroll ── */
   .menu-table-wrap {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    margin: 0 -4px;
   }
-  .menu-table { min-width: 340px; font-size: 11.5px; }
-  .menu-table th { font-size: 10px; padding: 3px 4px 6px; }
-  .menu-table td { padding: 4px 4px; }
-  .menu-table input[type="number"] { width: 50px; font-size: 11px; padding: 3px 4px; }
+  .menu-table                     { min-width: 320px; font-size: 12px; }
+  .menu-table th                  { font-size: 10px; padding: 3px 4px 6px; }
+  .menu-table td                  { padding: 4px; }
+  .menu-table td:first-child      { max-width: 110px; word-break: break-word; }
+  .menu-table input[type="number"]{ width: 48px; font-size: 11px; padding: 3px 4px; }
 
-  /* Fields */
-  .field label { font-size: 12px; }
-  .field input[type="number"] { width: 84px; }
+  /* ── Fields ── */
+  .field label                    { font-size: 12px; }
+  .field input[type="number"]     { width: 80px; }
 
-  /* Channel rows */
-  .dual input { width: 50px; font-size: 11px; }
+  /* ── Channel rows ── */
+  .dual                           { flex-wrap: wrap; gap: 4px; }
+  .dual input                     { width: 52px; font-size: 11px; }
 
-  /* Results */
-  .results { padding: 12px; }
-  .pl-table { font-size: 12px; }
-  .total-row td { font-size: 14px; }
+  /* ── Results ── */
+  .results                        { padding: 12px; }
+  .pl-table                       { font-size: 12px; }
+  .total-row td                   { font-size: 13px; }
 }
