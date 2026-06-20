@@ -7,7 +7,7 @@
           {
             "type": "command",
             "shell": "powershell",
-            "command": "$f = ($input | ConvertFrom-Json).tool_input.file_path; if ($f -like 'C:\\NoodleFan\\ProfitSimulator\\*') { Set-Location 'C:\\NoodleFan\\ProfitSimulator'; git add -A; git diff --cached --quiet; if (-not $?) { git commit -m 'auto: save changes'; git push } }",
+            "command": "$raw = [Console]::In.ReadToEnd(); $f = ($raw | ConvertFrom-Json).tool_input.file_path; if ($f -like 'C:\\NoodleFan\\ProfitSimulator\\*') { Set-Location 'C:\\NoodleFan\\ProfitSimulator'; git add -A; git diff --cached --quiet; if (-not $?) { git commit -m 'auto: save changes'; git push } }",
             "timeout": 30,
             "statusMessage": "Pushing to GitHub..."
           }
