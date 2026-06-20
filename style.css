@@ -26,10 +26,44 @@ body {
   padding: 24px 32px;
 }
 
+.topbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .brand {
   display: flex;
   align-items: baseline;
   gap: 12px;
+}
+
+.lang-switch {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.lang-btn {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lang-btn:hover {
+  background: rgba(255,255,255,0.22);
+}
+
+.lang-btn.active {
+  background: white;
+  color: var(--red-dark);
+  border-color: white;
 }
 
 .brand-en {

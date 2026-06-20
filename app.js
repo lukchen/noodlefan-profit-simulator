@@ -134,7 +134,7 @@ function computeBreakEven(v) {
 function updateMixWarning(v) {
   const total = v.pctPickup + v.pctDoorDash + v.pctUberEats + v.pctGrubhub;
   $("mixTotal").textContent = total.toFixed(0);
-  $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? "(should total 100%)" : "";
+  $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? window.NoodleI18N.t("mix.warning") : "";
 }
 
 function renderResults(pl, breakEvenDay) {
@@ -154,13 +154,14 @@ function renderResults(pl, breakEvenDay) {
 
   $("out-margin").textContent = fmtPct(pl.margin);
   $("out-orders").textContent = Math.round(pl.ordersPerMonth).toLocaleString();
-  $("out-breakeven").textContent = isFinite(breakEvenDay) ? breakEvenDay.toFixed(1) : "never (negative margin per order)";
+  $("out-breakeven").textContent = isFinite(breakEvenDay) ? breakEvenDay.toFixed(1) : window.NoodleI18N.t("breakeven.never");
 }
 
 function renderBreakdownChart(pl) {
   const ctx = $("breakdownChart");
+  const t = window.NoodleI18N.t;
   const data = {
-    labels: ["Food cost", "Platform fees", "Packaging", "Labor", "Rent & utilities", "Marketing", "Startup (amortized)"],
+    labels: [t("chart.cogs"), t("chart.platform"), t("chart.packaging"), t("chart.labor"), t("chart.rent"), t("chart.marketing"), t("chart.startup")],
     datasets: [{
       data: [pl.cogs, pl.platformFees, pl.packaging, pl.labor, pl.rentUtilities, pl.marketing, pl.startupInPL],
       backgroundColor: ["#e8a33d", "#c0392b", "#8d6e63", "#6d8b74", "#5b7c99", "#9b59b6", "#bdb2a7"],
@@ -180,19 +181,20 @@ function renderBreakdownChart(pl) {
 
 function renderSensitivityChart(v) {
   const ctx = $("sensitivityChart");
+  const t = window.NoodleI18N.t;
   const baseOrders = v.ordersPerDay || 1;
   const points = [];
   const labels = [];
   for (let m = 0.4; m <= 1.6; m += 0.2) {
     const orders = Math.round(baseOrders * m);
     const pl = computePL(v, orders);
-    labels.push(orders + "/day");
+    labels.push(orders + t("chart.perDaySuffix"));
     points.push(Math.round(pl.netProfit));
   }
   const data = {
     labels,
     datasets: [{
-      label: "Net profit / month ($)",
+      label: t("chart.sensitivityLabel"),
       data: points,
       borderColor: "#c0392b",
       backgroundColor: "rgba(192,57,43,0.12)",
@@ -228,6 +230,8 @@ function recalc() {
 }
 
 function init() {
+  window.NoodleI18N.applyToDOM();
+
   captureDefaults();
   const saved = loadFromStorage();
   if (saved) applyValues(saved);
@@ -239,6 +243,14 @@ function init() {
     applyValues(DEFAULTS);
     $("includeStartup").checked = true;
     recalc();
+  });
+
+  document.querySelectorAll(".lang-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      window.NoodleI18N.setLanguage(btn.getAttribute("data-lang"));
+      window.NoodleI18N.applyToDOM();
+      recalc();
+    });
   });
 
   recalc();

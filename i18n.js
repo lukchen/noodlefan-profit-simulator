@@ -1,0 +1,208 @@
+// NoodleFan 粉面王 — i18n (English / Chinese) for the Profit Simulator.
+// Exposes: window.NoodleI18N.t(key), .setLanguage(lang), .getLanguage(), .applyToDOM()
+
+(function () {
+  const LANG_KEY = "noodlefan-lang";
+
+  const STRINGS = {
+    en: {
+      docTitle: "NoodleFan 粉面王 — Profit Simulator",
+      subtitle: "Delivery & Pickup Profit Simulator — CloudKitchens Boston",
+
+      "s1.title": "1. Order Volume",
+      "s1.ordersPerDay": "Orders per day",
+      "s1.daysPerWeek": "Days open per week",
+      "s1.aov": "Average order value ($)",
+
+      "s2.title": "2. Order Channel Mix",
+      "s2.hint": "Percent of orders through each channel — should total 100%.",
+      "channel.pickup": "Direct Pickup (call-in / walk-up, no app)",
+      "channel.doordash": "DoorDash",
+      "channel.ubereats": "Uber Eats",
+      "channel.grubhub": "Grubhub",
+      "dual.pct": "% of orders",
+      "dual.fee": "% fee",
+      "mix.total": "Channel mix total:",
+      "mix.warning": "(should total 100%)",
+
+      "s3.title": "3. Kitchen Rent & Utilities (CloudKitchens)",
+      "s3.rent": "Monthly rent ($)",
+      "s3.utilities": "Utilities / CAM fees ($/mo)",
+      "s3.hint": "CloudKitchens doesn't publish list pricing — these are placeholder estimates for a small Boston ghost-kitchen unit. Replace with your actual quote.",
+
+      "s4.title": "4. Food Cost (COGS)",
+      "s4.foodCostPct": "Food cost (% of revenue)",
+      "s4.hint": "Typical noodle/rice-noodle restaurants run 28–35% COGS.",
+
+      "s5.title": "5. Packaging",
+      "s5.packaging": "Packaging cost per order ($)",
+
+      "s6.title": "6. Labor",
+      "s6.numStaff": "Number of staff",
+      "s6.hourlyWage": "Avg hourly wage ($)",
+      "s6.hoursPerWeek": "Hours/week per staff",
+      "s6.hint": "Treated as a fixed monthly cost (scheduled regardless of order volume).",
+
+      "s7.title": "7. Marketing & Promo",
+      "s7.marketing": "Monthly marketing spend ($)",
+
+      "s8.title": "8. One-Time Startup Costs",
+      "s8.equipment": "Kitchen equipment ($)",
+      "s8.permits": "Permits & licenses ($)",
+      "s8.inventory": "Initial inventory ($)",
+      "s8.smallwares": "Smallwares / misc ($)",
+      "s8.amortMonths": "Spread over (months)",
+      "s8.includeStartup": "Include amortized startup cost in monthly P&L",
+
+      resetBtn: "Reset to defaults",
+
+      "results.title": "Monthly P&L Summary",
+      "pl.revenue": "Revenue",
+      "pl.cogs": "Food cost (COGS)",
+      "pl.platform": "Delivery platform fees",
+      "pl.packaging": "Packaging",
+      "pl.labor": "Labor",
+      "pl.rent": "Rent & utilities",
+      "pl.marketing": "Marketing",
+      "pl.startup": "Startup cost (amortized)",
+      "pl.netprofit": "Net profit / month",
+      "pl.margin": "Net margin",
+      "pl.orders": "Orders / month",
+      "pl.breakeven": "Break-even orders/day",
+      "breakeven.never": "never (negative margin per order)",
+
+      "chart.breakdownTitle": "Cost Breakdown",
+      "chart.sensitivityTitle": "Profit vs. Order Volume",
+      "chart.cogs": "Food cost",
+      "chart.platform": "Platform fees",
+      "chart.packaging": "Packaging",
+      "chart.labor": "Labor",
+      "chart.rent": "Rent & utilities",
+      "chart.marketing": "Marketing",
+      "chart.startup": "Startup (amortized)",
+      "chart.sensitivityLabel": "Net profit / month ($)",
+      "chart.perDaySuffix": "/day",
+
+      footer: "NoodleFan Profit Simulator — built for evaluating a CloudKitchens Boston (delivery + pickup only) launch. All figures are editable estimates; verify rent and fees with your actual contracts.",
+    },
+
+    zh: {
+      docTitle: "粉面王 NoodleFan — 利润模拟器",
+      subtitle: "外卖与自取利润模拟器 — 波士顿 CloudKitchens",
+
+      "s1.title": "1. 订单量",
+      "s1.ordersPerDay": "每日订单数",
+      "s1.daysPerWeek": "每周营业天数",
+      "s1.aov": "平均客单价 ($)",
+
+      "s2.title": "2. 订单渠道占比",
+      "s2.hint": "各渠道订单占比 — 总和应为 100%。",
+      "channel.pickup": "直接自取（电话/到店，无平台）",
+      "channel.doordash": "DoorDash",
+      "channel.ubereats": "Uber Eats",
+      "channel.grubhub": "Grubhub",
+      "dual.pct": "% 订单占比",
+      "dual.fee": "% 手续费",
+      "mix.total": "渠道占比总计：",
+      "mix.warning": "（总和应为 100%）",
+
+      "s3.title": "3. 厨房租金与水电（CloudKitchens）",
+      "s3.rent": "月租金 ($)",
+      "s3.utilities": "水电/物业费 ($/月)",
+      "s3.hint": "CloudKitchens 未公开标准定价 — 以上为波士顿小型共享厨房单元的估算值，请替换为实际报价。",
+
+      "s4.title": "4. 食材成本（COGS）",
+      "s4.foodCostPct": "食材成本占营收比例 (%)",
+      "s4.hint": "典型米粉/面馆食材成本占比通常为 28%–35%。",
+
+      "s5.title": "5. 包装",
+      "s5.packaging": "每单包装成本 ($)",
+
+      "s6.title": "6. 人工",
+      "s6.numStaff": "员工人数",
+      "s6.hourlyWage": "平均时薪 ($)",
+      "s6.hoursPerWeek": "每位员工每周工时",
+      "s6.hint": "按固定月度成本计算（排班与订单量无关）。",
+
+      "s7.title": "7. 营销推广",
+      "s7.marketing": "每月营销支出 ($)",
+
+      "s8.title": "8. 一次性启动成本",
+      "s8.equipment": "厨房设备 ($)",
+      "s8.permits": "许可证与执照 ($)",
+      "s8.inventory": "初始库存 ($)",
+      "s8.smallwares": "小型用具/杂项 ($)",
+      "s8.amortMonths": "分摊月数",
+      "s8.includeStartup": "在月度利润表中计入分摊的启动成本",
+
+      resetBtn: "恢复默认值",
+
+      "results.title": "月度利润表概览",
+      "pl.revenue": "营收",
+      "pl.cogs": "食材成本（COGS）",
+      "pl.platform": "外卖平台费用",
+      "pl.packaging": "包装",
+      "pl.labor": "人工",
+      "pl.rent": "租金与水电",
+      "pl.marketing": "营销",
+      "pl.startup": "启动成本（分摊）",
+      "pl.netprofit": "月净利润",
+      "pl.margin": "净利率",
+      "pl.orders": "月订单量",
+      "pl.breakeven": "保本日订单量",
+      "breakeven.never": "无法保本（单均利润为负）",
+
+      "chart.breakdownTitle": "成本构成",
+      "chart.sensitivityTitle": "利润与订单量关系",
+      "chart.cogs": "食材成本",
+      "chart.platform": "平台费用",
+      "chart.packaging": "包装",
+      "chart.labor": "人工",
+      "chart.rent": "租金与水电",
+      "chart.marketing": "营销",
+      "chart.startup": "启动成本（分摊）",
+      "chart.sensitivityLabel": "月净利润 ($)",
+      "chart.perDaySuffix": "单/天",
+
+      footer: "NoodleFan 利润模拟器 — 用于评估在波士顿 CloudKitchens（仅外卖与自取）开店方案。所有数值均为可编辑的估算值，请以实际合同为准。",
+    },
+  };
+
+  function getLanguage() {
+    try {
+      const saved = localStorage.getItem(LANG_KEY);
+      if (saved === "en" || saved === "zh") return saved;
+    } catch (e) { /* ignore */ }
+    return "en";
+  }
+
+  function setLanguage(lang) {
+    if (lang !== "en" && lang !== "zh") lang = "en";
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* ignore */ }
+    CURRENT = lang;
+  }
+
+  let CURRENT = getLanguage();
+
+  function t(key) {
+    return (STRINGS[CURRENT] && STRINGS[CURRENT][key]) || (STRINGS.en[key]) || key;
+  }
+
+  function applyToDOM() {
+    document.documentElement.lang = CURRENT === "zh" ? "zh-CN" : "en";
+    document.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
+    });
+    document.querySelectorAll(".lang-btn").forEach((btn) => {
+      btn.classList.toggle("active", btn.getAttribute("data-lang") === CURRENT);
+    });
+  }
+
+  window.NoodleI18N = {
+    t,
+    setLanguage,
+    getLanguage: () => CURRENT,
+    applyToDOM,
+  };
+})();
