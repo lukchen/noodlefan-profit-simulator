@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NoodleFan 粉面王 — Profit Simulator</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-en">NoodleFan</span>
+      <span class="brand-cn">粉面王</span>
+    </div>
+    <div class="subtitle">Delivery &amp; Pickup Profit Simulator — CloudKitchens Boston</div>
+  </header>
+
+  <main class="layout">
+    <!-- ============ INPUT COLUMN ============ -->
+    <section class="inputs">
+
+      <div class="card">
+        <h2>1. Order Volume</h2>
+        <div class="field">
+          <label for="ordersPerDay">Orders per day</label>
+          <input type="number" id="ordersPerDay" value="40" min="0" step="1" />
+        </div>
+        <div class="field">
+          <label for="daysPerWeek">Days open per week</label>
+          <input type="number" id="daysPerWeek" value="6" min="1" max="7" step="1" />
+        </div>
+        <div class="field">
+          <label for="aov">Average order value ($)</label>
+          <input type="number" id="aov" value="22" min="0" step="0.5" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>2. Order Channel Mix</h2>
+        <p class="hint">Percent of orders through each channel — should total 100%.</p>
+        <div class="channel-row">
+          <label>Direct Pickup (call-in / walk-up, no app)</label>
+          <div class="dual">
+            <input type="number" id="pctPickup" value="15" min="0" max="100" step="1" /> <span>% of orders</span>
+            <input type="number" id="commPickup" value="0" min="0" max="100" step="0.5" /> <span>% fee</span>
+          </div>
+        </div>
+        <div class="channel-row">
+          <label>DoorDash</label>
+          <div class="dual">
+            <input type="number" id="pctDoorDash" value="40" min="0" max="100" step="1" /> <span>% of orders</span>
+            <input type="number" id="commDoorDash" value="25" min="0" max="100" step="0.5" /> <span>% fee</span>
+          </div>
+        </div>
+        <div class="channel-row">
+          <label>Uber Eats</label>
+          <div class="dual">
+            <input type="number" id="pctUberEats" value="30" min="0" max="100" step="1" /> <span>% of orders</span>
+            <input type="number" id="commUberEats" value="25" min="0" max="100" step="0.5" /> <span>% fee</span>
+          </div>
+        </div>
+        <div class="channel-row">
+          <label>Grubhub</label>
+          <div class="dual">
+            <input type="number" id="pctGrubhub" value="15" min="0" max="100" step="1" /> <span>% of orders</span>
+            <input type="number" id="commGrubhub" value="20" min="0" max="100" step="0.5" /> <span>% fee</span>
+          </div>
+        </div>
+        <div class="mix-total">Channel mix total: <span id="mixTotal">100</span>% <span id="mixWarning" class="warn"></span></div>
+      </div>
+
+      <div class="card">
+        <h2>3. Kitchen Rent &amp; Utilities (CloudKitchens)</h2>
+        <div class="field">
+          <label for="rent">Monthly rent ($)</label>
+          <input type="number" id="rent" value="2200" min="0" step="50" />
+        </div>
+        <div class="field">
+          <label for="utilities">Utilities / CAM fees ($/mo)</label>
+          <input type="number" id="utilities" value="300" min="0" step="25" />
+        </div>
+        <p class="hint">CloudKitchens doesn't publish list pricing — these are placeholder estimates for a small Boston ghost-kitchen unit. Replace with your actual quote.</p>
+      </div>
+
+      <div class="card">
+        <h2>4. Food Cost (COGS)</h2>
+        <div class="field">
+          <label for="foodCostPct">Food cost (% of revenue)</label>
+          <input type="number" id="foodCostPct" value="30" min="0" max="100" step="1" />
+        </div>
+        <p class="hint">Typical noodle/rice-noodle restaurants run 28–35% COGS.</p>
+      </div>
+
+      <div class="card">
+        <h2>5. Packaging</h2>
+        <div class="field">
+          <label for="packagingPerOrder">Packaging cost per order ($)</label>
+          <input type="number" id="packagingPerOrder" value="0.90" min="0" step="0.05" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>6. Labor</h2>
+        <div class="field">
+          <label for="numStaff">Number of staff</label>
+          <input type="number" id="numStaff" value="2" min="0" step="1" />
+        </div>
+        <div class="field">
+          <label for="hourlyWage">Avg hourly wage ($)</label>
+          <input type="number" id="hourlyWage" value="18" min="0" step="0.5" />
+        </div>
+        <div class="field">
+          <label for="hoursPerWeek">Hours/week per staff</label>
+          <input type="number" id="hoursPerWeek" value="35" min="0" step="1" />
+        </div>
+        <p class="hint">Treated as a fixed monthly cost (scheduled regardless of order volume).</p>
+      </div>
+
+      <div class="card">
+        <h2>7. Marketing &amp; Promo</h2>
+        <div class="field">
+          <label for="marketingMonthly">Monthly marketing spend ($)</label>
+          <input type="number" id="marketingMonthly" value="200" min="0" step="25" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>8. One-Time Startup Costs</h2>
+        <div class="field">
+          <label for="equipmentCost">Kitchen equipment ($)</label>
+          <input type="number" id="equipmentCost" value="8000" min="0" step="100" />
+        </div>
+        <div class="field">
+          <label for="permitsCost">Permits &amp; licenses ($)</label>
+          <input type="number" id="permitsCost" value="1500" min="0" step="50" />
+        </div>
+        <div class="field">
+          <label for="initialInventoryCost">Initial inventory ($)</label>
+          <input type="number" id="initialInventoryCost" value="1200" min="0" step="50" />
+        </div>
+        <div class="field">
+          <label for="smallwaresCost">Smallwares / misc ($)</label>
+          <input type="number" id="smallwaresCost" value="800" min="0" step="50" />
+        </div>
+        <div class="field">
+          <label for="amortMonths">Spread over (months)</label>
+          <input type="number" id="amortMonths" value="12" min="1" step="1" />
+        </div>
+        <div class="field checkbox-field">
+          <input type="checkbox" id="includeStartup" checked />
+          <label for="includeStartup">Include amortized startup cost in monthly P&amp;L</label>
+        </div>
+      </div>
+
+      <button id="resetBtn" class="reset-btn">Reset to defaults</button>
+    </section>
+
+    <!-- ============ RESULTS COLUMN ============ -->
+    <section class="results">
+      <div class="card summary">
+        <h2>Monthly P&amp;L Summary</h2>
+        <table id="plTable" class="pl-table">
+          <tbody>
+            <tr><td>Revenue</td><td id="out-revenue">$0</td></tr>
+            <tr><td>Food cost (COGS)</td><td id="out-cogs">$0</td></tr>
+            <tr><td>Delivery platform fees</td><td id="out-platform">$0</td></tr>
+            <tr><td>Packaging</td><td id="out-packaging">$0</td></tr>
+            <tr><td>Labor</td><td id="out-labor">$0</td></tr>
+            <tr><td>Rent &amp; utilities</td><td id="out-rent">$0</td></tr>
+            <tr><td>Marketing</td><td id="out-marketing">$0</td></tr>
+            <tr><td>Startup cost (amortized)</td><td id="out-startup">$0</td></tr>
+            <tr class="total-row"><td>Net profit / month</td><td id="out-netprofit">$0</td></tr>
+            <tr><td>Net margin</td><td id="out-margin">0%</td></tr>
+            <tr><td>Orders / month</td><td id="out-orders">0</td></tr>
+            <tr><td>Break-even orders/day</td><td id="out-breakeven">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <h2>Cost Breakdown</h2>
+        <canvas id="breakdownChart" height="260"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>Profit vs. Order Volume</h2>
+        <canvas id="sensitivityChart" height="260"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    NoodleFan Profit Simulator — built for evaluating a CloudKitchens Boston (delivery + pickup only) launch. All figures are editable estimates; verify rent and fees with your actual contracts.
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
