@@ -101,7 +101,7 @@
 
       "results.title": "Monthly P&L Summary",
       "pl.revenue": "Revenue",
-      "pl.cogs": "Food cost (COGS)",
+      "pl.cogs": "Food cost",
       "pl.platform": "Delivery platform fees",
       "pl.packaging": "Packaging",
       "pl.labor": "Labor",
@@ -225,7 +225,7 @@
 
       "results.title": "月度利润表概览",
       "pl.revenue": "营收",
-      "pl.cogs": "食材成本（COGS）",
+      "pl.cogs": "食材成本",
       "pl.platform": "外卖平台费用",
       "pl.packaging": "包装",
       "pl.labor": "人工",
