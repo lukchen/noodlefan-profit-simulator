@@ -126,6 +126,9 @@ body {
 .tab-btn:hover { color: var(--text); }
 .tab-btn.active { color: var(--red-dark); border-bottom-color: var(--red-dark); }
 
+/* Desktop: hide Results tab (results always visible as right sidebar) */
+.results-tab { display: none; }
+
 /* ── TAB PANELS ── */
 .tab-panels {
   flex: 1;
@@ -342,12 +345,16 @@ canvas { max-width: 100%; }
   html            { overflow-x: hidden; }
   body            { overflow-x: hidden; overflow-y: auto; height: auto; width: 100%; }
   .layout         { grid-template-columns: 1fr; overflow: hidden; width: 100%; }
-  .inputs         { border-right: none; border-bottom: 1px solid var(--border);
+  .inputs         { border-right: none; border-bottom: none;
                     overflow: hidden; height: auto; width: 100%; }
-  .results        { overflow: visible; width: 100%; }
+  /* Results hidden on mobile by default; shown via Results tab */
+  .results        { display: none; width: 100%; padding: 12px; background: var(--bg); }
+  .results.mobile-results-active { display: flex; }
   .tab-panels     { overflow: visible; height: auto; flex: none; width: 100%; }
   .tab-bar        { position: sticky; top: 0; z-index: 50;
                     box-shadow: 0 2px 6px rgba(0,0,0,0.08); width: 100%; }
+  /* Show Results tab button on mobile */
+  .results-tab    { display: flex; align-items: center; justify-content: center; }
 
   /* Table wraps stay within their card */
   .menu-table-wrap, .price-guide-wrap {
@@ -369,9 +376,9 @@ canvas { max-width: 100%; }
   .lang-btn       { font-size: 11px; padding: 3px 8px; }
   .subtitle       { font-size: 10px; }
 
-  /* ── Tab bar — 4 equal-width tabs that ALWAYS fit ── */
+  /* ── Tab bar — 5 equal-width tabs that ALWAYS fit ── */
   .tab-bar        { padding: 0; display: flex; overflow: hidden; }
-  .tab-btn        { flex: 1; min-width: 0; padding: 10px 4px; font-size: 11px;
+  .tab-btn        { flex: 1; min-width: 0; padding: 10px 2px; font-size: 10px;
                     font-weight: 700; text-align: center; white-space: nowrap;
                     overflow: hidden; text-overflow: ellipsis; }
 

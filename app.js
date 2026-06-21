@@ -360,10 +360,20 @@ function init() {
 
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      const isMobile = window.innerWidth <= 800;
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
       btn.classList.add("active");
-      $("tab-" + btn.dataset.tab).classList.add("active");
+      if (tab === "results") {
+        if (isMobile) {
+          document.querySelector(".results").classList.add("mobile-results-active");
+        }
+      } else {
+        document.querySelector(".results").classList.remove("mobile-results-active");
+        const panel = $("tab-" + tab);
+        if (panel) panel.classList.add("active");
+      }
     });
   });
 

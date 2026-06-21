@@ -87,6 +87,7 @@
       "tab.channels": "Channels",
       "tab.costs": "Costs",
       "tab.startup": "Startup",
+      "tab.results": "Results",
 
       "pg.title": "Platform Price Guide",
       "pg.hint": "Recommended consumer-facing prices on each platform so the restaurant nets the same base price after commission. Formula: base ÷ (1 − fee%).",
@@ -211,6 +212,7 @@
       "tab.channels": "渠道",
       "tab.costs": "成本",
       "tab.startup": "启动",
+      "tab.results": "结果",
 
       "pg.title": "各平台定价参考",
       "pg.hint": "各渠道建议售价，确保扣除平台抽成后到手价与直营售价相同。计算公式：直营价 ÷ (1 − 抽成%)",
