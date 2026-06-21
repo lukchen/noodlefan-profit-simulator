@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title data-i18n="docTitle">NoodleFan 粉面王 — Profit Simulator</title>
-<link rel="stylesheet" href="style.css?v=6" />
+<link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body>
   <header class="topbar">
@@ -200,6 +200,14 @@
           <p class="hint" data-i18n="s6.hint">Treated as a fixed monthly cost (scheduled regardless of order volume).</p>
         </div>
         <div class="card">
+          <h2 data-i18n="s9.title">Income Tax</h2>
+          <div class="field">
+            <label for="taxRate" data-i18n="s9.taxRate">Est. tax rate (%)</label>
+            <input type="number" id="taxRate" value="28" min="0" max="60" step="1" />
+          </div>
+          <p class="hint" data-i18n="s9.hint"></p>
+        </div>
+        <div class="card">
           <h2 data-i18n="s7.title">Marketing &amp; Promo</h2>
           <div class="field">
             <label for="marketingMonthly" data-i18n="s7.marketing">Monthly marketing spend ($)</label>
@@ -257,6 +265,8 @@
             <tr><td data-i18n="pl.startup">Startup (amortized)</td><td id="out-startup">$0</td></tr>
             <tr class="total-row"><td data-i18n="pl.netprofit">Net profit / month</td><td id="out-netprofit">$0</td></tr>
             <tr><td data-i18n="pl.margin">Net margin</td><td id="out-margin">0%</td></tr>
+            <tr><td data-i18n="pl.tax">Est. income tax</td><td id="out-tax">$0</td></tr>
+            <tr class="total-row after-tax"><td data-i18n="pl.netprofit.aftertax">Net profit after tax</td><td id="out-netprofit-aftertax">$0</td></tr>
             <tr><td data-i18n="pl.orders">Orders / month</td><td id="out-orders">0</td></tr>
             <tr><td data-i18n="pl.breakeven">Break-even orders/day</td><td id="out-breakeven">0</td></tr>
           </tbody>
@@ -279,7 +289,7 @@
   </footer>
 
   <script src="chart.umd.min.js?v=3"></script>
-  <script src="i18n.js?v=6"></script>
-  <script src="app.js?v=6"></script>
+  <script src="i18n.js?v=7"></script>
+  <script src="app.js?v=7"></script>
 </body>
 </html>

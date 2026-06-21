@@ -16,6 +16,7 @@ const FIELD_IDS = [
   "marketingMonthly",
   "rent", "utilities",
   "equipmentCost", "permitsCost", "initialInventoryCost", "smallwaresCost", "amortMonths",
+  "taxRate",
 ];
 
 const DEFAULTS = {};
@@ -113,9 +114,13 @@ function computePL(v, scaleOverride) {
   const netProfit  = revenue - totalCosts;
   const margin     = revenue > 0 ? (netProfit / revenue) * 100 : 0;
 
+  const incomeTax = netProfit > 0 ? netProfit * (v.taxRate / 100) : 0;
+  const netProfitAfterTax = netProfit - incomeTax;
+
   return {
     ordersPerDay, ordersPerMonth, revenue, cogs, platformFees, packaging, labor,
-    rentUtilities, marketing, startupMonthly, startupInPL, netProfit, margin, startupTotal,
+    rentUtilities, marketing, startupMonthly, startupInPL, netProfit, margin,
+    startupTotal, incomeTax, netProfitAfterTax,
   };
 }
 
@@ -180,6 +185,11 @@ function renderResults(pl, breakEvenDay) {
   netEl.classList.add(pl.netProfit >= 0 ? "positive" : "negative");
 
   $("out-margin").textContent    = fmtPct(pl.margin);
+  $("out-tax").textContent       = "-" + fmtUSD(pl.incomeTax);
+  const afterTaxEl = $("out-netprofit-aftertax");
+  afterTaxEl.textContent = fmtUSD(pl.netProfitAfterTax);
+  afterTaxEl.classList.remove("positive", "negative");
+  afterTaxEl.classList.add(pl.netProfitAfterTax >= 0 ? "positive" : "negative");
   $("out-orders").textContent    = Math.round(pl.ordersPerMonth).toLocaleString();
   $("out-breakeven").textContent = isFinite(breakEvenDay)
     ? breakEvenDay.toFixed(1)

@@ -279,6 +279,9 @@ body {
 
 #out-netprofit.positive { color: var(--good); }
 #out-netprofit.negative { color: var(--bad); }
+#out-netprofit-aftertax.positive { color: var(--good); }
+#out-netprofit-aftertax.negative { color: var(--bad); }
+.after-tax td { border-top: 2px solid var(--text); border-bottom: 2px solid var(--text); font-size: 15px; padding: 10px 4px; }
 
 /* ── PLATFORM PRICE GUIDE ── */
 .price-guide-wrap {

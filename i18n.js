@@ -69,6 +69,13 @@
       "s8.amortMonths": "Spread over (months)",
       "s8.includeStartup": "Include amortized startup cost in monthly P&L",
 
+      "s9.title": "Income Tax",
+      "s9.taxRate": "Est. tax rate (%)",
+      "s9.hint": "Federal (~22–24%) + MA state (5%) = ~27–29%. Applied to net profit only; no tax if operating at a loss.",
+
+      "pl.tax": "Est. income tax",
+      "pl.netprofit.aftertax": "Net profit after tax",
+
       "tab.menu": "Menu",
       "tab.channels": "Channels",
       "tab.costs": "Costs",
@@ -178,6 +185,13 @@
       "s8.smallwares": "小型用具/杂项 ($)",
       "s8.amortMonths": "分摊月数",
       "s8.includeStartup": "在月度利润表中计入分摊的启动成本",
+
+      "s9.title": "所得税",
+      "s9.taxRate": "预估税率 (%)",
+      "s9.hint": "联邦税约 22–24% + MA 州税 5% = 合计约 27–29%。仅对盈利部分征税，亏损时不计。",
+
+      "pl.tax": "预估所得税",
+      "pl.netprofit.aftertax": "税后净利润",
 
       "tab.menu": "菜单",
       "tab.channels": "渠道",
