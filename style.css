@@ -269,6 +269,8 @@ body {
   border-bottom: 1px solid var(--border);
 }
 .pl-table td:last-child { text-align: right; font-weight: 600; }
+.pl-table tr.pl-income td:last-child  { color: var(--good); }
+.pl-table tr.pl-cost   td:last-child  { color: var(--bad);  }
 
 .total-row td {
   border-top: 2px solid var(--text);
