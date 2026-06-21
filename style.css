@@ -338,56 +338,71 @@ canvas { max-width: 100%; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 800px) {
-  /* Switch to natural scroll layout */
-  body        { overflow: auto; height: auto; }
-  .layout     { grid-template-columns: 1fr; overflow: visible; }
-  .inputs     { border-right: none; border-bottom: 1px solid var(--border); overflow: visible; height: auto; }
-  .results    { overflow: visible; }
-  .tab-panels { overflow: visible; height: auto; flex: none; }
+  /* Hard-clamp everything to viewport width */
+  html            { overflow-x: hidden; }
+  body            { overflow-x: hidden; overflow-y: auto; height: auto; width: 100%; }
+  .layout         { grid-template-columns: 1fr; overflow: hidden; width: 100%; }
+  .inputs         { border-right: none; border-bottom: 1px solid var(--border);
+                    overflow: hidden; height: auto; width: 100%; }
+  .results        { overflow: visible; width: 100%; }
+  .tab-panels     { overflow: visible; height: auto; flex: none; width: 100%; }
+  .tab-bar        { position: sticky; top: 0; z-index: 50;
+                    box-shadow: 0 2px 6px rgba(0,0,0,0.08); width: 100%; }
 
-  /* Sticky tab bar so tabs are reachable while scrolling */
-  .tab-bar    { position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+  /* Table wraps stay within their card */
+  .menu-table-wrap, .price-guide-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 @media (max-width: 600px) {
   /* ── Topbar ── */
-  .topbar         { padding: 10px 14px 8px; }
-  .topbar-row     { flex-wrap: wrap; gap: 6px; }
-  .brand-en       { font-size: 18px; }
-  .brand-cn       { font-size: 14px; }
-  .topbar-right   { gap: 8px; }
-  .reset-btn      { font-size: 11px; padding: 3px 10px; }
-  .lang-btn       { font-size: 11px; padding: 3px 9px; }
-  .subtitle       { font-size: 11px; }
+  .topbar         { padding: 8px 12px; }
+  .topbar-row     { flex-wrap: wrap; gap: 4px; }
+  .brand          { gap: 6px; }
+  .brand-en       { font-size: 17px; }
+  .brand-cn       { font-size: 13px; }
+  .topbar-right   { gap: 6px; }
+  .reset-btn      { font-size: 11px; padding: 3px 9px; }
+  .lang-btn       { font-size: 11px; padding: 3px 8px; }
+  .subtitle       { font-size: 10px; }
 
-  /* ── Tab bar — equal-width tabs ── */
-  .tab-bar        { padding: 0; }
-  .tab-btn        { flex: 1; padding: 11px 4px; font-size: 12px; text-align: center; min-width: 0; }
+  /* ── Tab bar — 4 equal-width tabs that ALWAYS fit ── */
+  .tab-bar        { padding: 0; display: flex; overflow: hidden; }
+  .tab-btn        { flex: 1; min-width: 0; padding: 10px 4px; font-size: 11px;
+                    font-weight: 700; text-align: center; white-space: nowrap;
+                    overflow: hidden; text-overflow: ellipsis; }
 
   /* ── Cards ── */
-  .card           { padding: 12px; margin-bottom: 10px; }
+  .card           { padding: 10px 12px; margin-bottom: 10px; }
+  .card h2        { font-size: 13px; margin-bottom: 10px; }
 
-  /* ── Menu table — horizontal scroll ── */
-  .menu-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  .menu-table                     { min-width: 320px; font-size: 12px; }
-  .menu-table th                  { font-size: 10px; padding: 3px 4px 6px; }
-  .menu-table td                  { padding: 4px; }
-  .menu-table td:first-child      { max-width: 110px; word-break: break-word; }
-  .menu-table input[type="number"]{ width: 48px; font-size: 11px; padding: 3px 4px; }
+  /* ── Menu table — fixed layout so columns always fit ── */
+  .menu-table     { width: 100%; table-layout: fixed; font-size: 12px; }
+  .menu-table th  { font-size: 10px; padding: 3px 4px 6px; }
+  .menu-table td  { padding: 4px; word-break: break-word; }
+  /* Dish name: takes remaining space; value cols: fixed width */
+  .menu-table th:nth-child(2), .menu-table td:nth-child(2),
+  .menu-table th:nth-child(3), .menu-table td:nth-child(3),
+  .menu-table th:nth-child(4), .menu-table td:nth-child(4) { width: 56px; }
+  .menu-table input[type="number"] { width: 46px; font-size: 11px; padding: 3px 4px; }
+
+  /* Price guide table stays scrollable */
+  .price-guide-table { min-width: 360px; }
 
   /* ── Fields ── */
-  .field label                    { font-size: 12px; }
-  .field input[type="number"]     { width: 80px; }
+  .field          { gap: 8px; }
+  .field label    { font-size: 12px; min-width: 0; }
+  .field input[type="number"] { width: 76px; flex-shrink: 0; }
 
   /* ── Channel rows ── */
-  .dual                           { flex-wrap: wrap; gap: 4px; }
-  .dual input                     { width: 52px; font-size: 11px; }
+  .dual           { flex-wrap: wrap; gap: 4px; }
+  .dual input     { width: 50px; font-size: 11px; }
 
   /* ── Results ── */
-  .results                        { padding: 12px; }
-  .pl-table                       { font-size: 12px; }
-  .total-row td                   { font-size: 13px; }
+  .results        { padding: 10px 12px; }
+  .pl-table       { font-size: 12px; }
+  .total-row td   { font-size: 13px; }
 }
