@@ -192,6 +192,12 @@ function renderResults(pl, breakEvenDay) {
   $("out-sep").textContent         = "-" + fmtUSD(pl.sepDeduction);
   $("out-sec179").textContent      = "-" + fmtUSD(pl.sec179Monthly);
   $("out-taxable").textContent     = fmtUSD(pl.taxableIncome);
+  // Annotate tax row label with rate and calculation
+  const taxLabelEl = $("out-tax").previousElementSibling;
+  if (taxLabelEl) {
+    const base = window.NoodleI18N.t("pl.tax");
+    taxLabelEl.textContent = `${base}  (${fmtUSD(pl.taxableIncome)} × ${v.taxRate}%)`;
+  }
   $("out-tax").textContent         = "-" + fmtUSD(pl.incomeTax);
   const afterTaxEl = $("out-netprofit-aftertax");
   afterTaxEl.textContent = fmtUSD(pl.netProfitAfterTax);
