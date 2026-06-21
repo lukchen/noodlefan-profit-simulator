@@ -195,8 +195,9 @@ function renderResults(pl, breakEvenDay) {
   // Annotate tax row label with rate and calculation
   const taxLabelEl = $("out-tax").previousElementSibling;
   if (taxLabelEl) {
+    const taxRate = parseFloat($("taxRate").value) || 0;
     const base = window.NoodleI18N.t("pl.tax");
-    taxLabelEl.textContent = `${base}  (${fmtUSD(pl.taxableIncome)} × ${v.taxRate}%)`;
+    taxLabelEl.textContent = `${base}  (${fmtUSD(pl.taxableIncome)} × ${taxRate}%)`;
   }
   $("out-tax").textContent         = "-" + fmtUSD(pl.incomeTax);
   const afterTaxEl = $("out-netprofit-aftertax");
