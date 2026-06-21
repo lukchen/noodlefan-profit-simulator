@@ -16,7 +16,7 @@ const FIELD_IDS = [
   "marketingMonthly",
   "rent", "utilities",
   "equipmentCost", "permitsCost", "initialInventoryCost", "smallwaresCost", "amortMonths",
-  "taxRate",
+  "taxRate", "sepIRAPct", "sec179",
 ];
 
 const DEFAULTS = {};
@@ -114,13 +114,17 @@ function computePL(v, scaleOverride) {
   const netProfit  = revenue - totalCosts;
   const margin     = revenue > 0 ? (netProfit / revenue) * 100 : 0;
 
-  const incomeTax = netProfit > 0 ? netProfit * (v.taxRate / 100) : 0;
+  const sepDeduction    = netProfit > 0 ? netProfit * (v.sepIRAPct / 100) : 0;
+  const sec179Monthly   = (v.sec179 || 0) / 12;
+  const totalDeductions = sepDeduction + sec179Monthly;
+  const taxableIncome   = Math.max(0, netProfit - totalDeductions);
+  const incomeTax       = taxableIncome * (v.taxRate / 100);
   const netProfitAfterTax = netProfit - incomeTax;
 
   return {
     ordersPerDay, ordersPerMonth, revenue, cogs, platformFees, packaging, labor,
     rentUtilities, marketing, startupMonthly, startupInPL, netProfit, margin,
-    startupTotal, incomeTax, netProfitAfterTax,
+    startupTotal, sepDeduction, sec179Monthly, taxableIncome, incomeTax, netProfitAfterTax,
   };
 }
 
@@ -184,8 +188,11 @@ function renderResults(pl, breakEvenDay) {
   netEl.classList.remove("positive", "negative");
   netEl.classList.add(pl.netProfit >= 0 ? "positive" : "negative");
 
-  $("out-margin").textContent    = fmtPct(pl.margin);
-  $("out-tax").textContent       = "-" + fmtUSD(pl.incomeTax);
+  $("out-margin").textContent      = fmtPct(pl.margin);
+  $("out-sep").textContent         = "-" + fmtUSD(pl.sepDeduction);
+  $("out-sec179").textContent      = "-" + fmtUSD(pl.sec179Monthly);
+  $("out-taxable").textContent     = fmtUSD(pl.taxableIncome);
+  $("out-tax").textContent         = "-" + fmtUSD(pl.incomeTax);
   const afterTaxEl = $("out-netprofit-aftertax");
   afterTaxEl.textContent = fmtUSD(pl.netProfitAfterTax);
   afterTaxEl.classList.remove("positive", "negative");

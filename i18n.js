@@ -71,8 +71,15 @@
 
       "s9.title": "Income Tax",
       "s9.taxRate": "Est. tax rate (%)",
-      "s9.hint": "Federal (~22–24%) + MA state (5%) = ~27–29%. Applied to net profit only; no tax if operating at a loss.",
+      "s9.hint": "Federal (~22–24%) + MA state (5%) = ~27–29%. Applied to taxable income after deductions.",
+      "s9.deduct.title": "Tax Deductions",
+      "s9.sep": "SEP-IRA contribution (% of profit)",
+      "s9.sec179": "Section 179 equipment deduction ($/yr)",
+      "s9.deduct.hint": "SEP-IRA: up to 25% of net profit, goes to retirement. Section 179: deduct full equipment cost in year 1 instead of depreciating.",
 
+      "pl.sep": "SEP-IRA deduction",
+      "pl.sec179": "Section 179 (monthly equiv.)",
+      "pl.taxable": "Taxable income",
       "pl.tax": "Est. income tax",
       "pl.netprofit.aftertax": "Net profit after tax",
 
@@ -188,8 +195,15 @@
 
       "s9.title": "所得税",
       "s9.taxRate": "预估税率 (%)",
-      "s9.hint": "联邦税约 22–24% + MA 州税 5% = 合计约 27–29%。仅对盈利部分征税，亏损时不计。",
+      "s9.hint": "联邦税约 22–24% + MA 州税 5% = 合计约 27–29%。按扣除减税项后的应税收入计算。",
+      "s9.deduct.title": "减税项",
+      "s9.sep": "SEP-IRA 退休金缴存（占利润 %）",
+      "s9.sec179": "Section 179 设备抵扣（$/年）",
+      "s9.deduct.hint": "SEP-IRA：最高可抵扣净利润 25%，存入退休账户。Section 179：设备费用当年全额抵扣，无需逐年折旧。",
 
+      "pl.sep": "SEP-IRA 退休金抵扣",
+      "pl.sec179": "Section 179（月均）",
+      "pl.taxable": "应税收入",
       "pl.tax": "预估所得税",
       "pl.netprofit.aftertax": "税后净利润",
 
