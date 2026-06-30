@@ -63,7 +63,8 @@
 
       "s8.title": "8. One-Time Startup Costs",
       "s8.equipment": "Kitchen equipment ($)",
-      "s8.permits": "Permits & licenses ($)",
+      "s8.permits": "CloudKitchens Activation Fee ($)",
+      "s8.otherPermits": "Other permits & licenses ($)",
       "s8.inventory": "Initial inventory ($)",
       "s8.smallwares": "Smallwares / misc ($)",
       "s8.amortMonths": "Spread over (months)",
@@ -188,7 +189,8 @@
 
       "s8.title": "8. 一次性启动成本",
       "s8.equipment": "厨房设备 ($)",
-      "s8.permits": "许可证与执照 ($)",
+      "s8.permits": "CloudKitchens Activation Fee ($)",
+      "s8.otherPermits": "其他许可证与执照 ($)",
       "s8.inventory": "初始库存 ($)",
       "s8.smallwares": "小型用具/杂项 ($)",
       "s8.amortMonths": "分摊月数",
