@@ -62,7 +62,9 @@
       "s7.marketing": "Monthly marketing spend ($)",
 
       "s8.title": "8. One-Time Startup Costs",
-      "s8.equipment": "Kitchen equipment ($)",
+      "s8.equipment": "Kitchen Equipment",
+      "s8.equipTotal": "Subtotal:",
+      "s8.addItem": "+ Add item",
       "s8.permits": "CloudKitchens Activation Fee ($)",
       "s8.otherPermits": "Other permits & licenses ($)",
       "s8.inventory": "Initial inventory ($)",
@@ -188,7 +190,9 @@
       "s7.marketing": "每月营销支出 ($)",
 
       "s8.title": "8. 一次性启动成本",
-      "s8.equipment": "厨房设备 ($)",
+      "s8.equipment": "厨房设备",
+      "s8.equipTotal": "小计：",
+      "s8.addItem": "+ 添加项目",
       "s8.permits": "CloudKitchens Activation Fee ($)",
       "s8.otherPermits": "其他许可证与执照 ($)",
       "s8.inventory": "初始库存 ($)",
