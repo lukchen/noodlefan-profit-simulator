@@ -15,13 +15,22 @@ const FIELD_IDS = [
   "numStaff", "hourlyWage", "hoursPerWeek",
   "marketingMonthly",
   "rent", "utilities",
-  "equipmentCost", "permitsCost", "otherPermitsCost", "initialInventoryCost", "smallwaresCost", "amortMonths",
+  "permitsCost", "otherPermitsCost", "initialInventoryCost", "smallwaresCost", "amortMonths",
   "taxRate", "sepIRAPct", "sec179",
 ];
 
 const DEFAULTS = {};
 const STORAGE_KEY = "noodlefan-profit-sim-v2";
 const WEEKS_PER_MONTH = 52 / 12;
+
+// Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
+const DEFAULT_EQUIPMENT = [
+  { name: "独眼灶", price: 500, qty: 3 },
+  { name: "六眼灶", price: 800, qty: 1 },
+  { name: "汤锅",   price: 100, qty: 2 },
+  { name: "炒锅",   price: 100, qty: 1 },
+  { name: "煮锅",   price: 60,  qty: 4 },
+];
 
 let breakdownChart = null;
 let sensitivityChart = null;
@@ -37,6 +46,8 @@ function readInputs() {
   const v = {};
   FIELD_IDS.forEach((id) => { v[id] = parseFloat($(id).value) || 0; });
   v.includeStartup = $("includeStartup").checked;
+  v.equipment = readEquipment();
+  v.equipmentCost = equipmentTotal(v.equipment);
   return v;
 }
 
@@ -48,6 +59,46 @@ function getDishes(v) {
     { qty: v.dish4Qty, price: v.dish4Price, cost: v.dish4Cost },
     { qty: v.dish5Qty, price: v.dish5Price, cost: v.dish5Cost },
   ];
+}
+
+// ── Equipment list ──
+function readEquipment() {
+  const list = [];
+  document.querySelectorAll("#equipmentList .equipment-row").forEach((row) => {
+    list.push({
+      name:  row.querySelector(".eq-name").value,
+      price: parseFloat(row.querySelector(".eq-price").value) || 0,
+      qty:   parseFloat(row.querySelector(".eq-qty").value)   || 0,
+    });
+  });
+  return list;
+}
+
+function equipmentTotal(list) {
+  return list.reduce((s, item) => s + item.price * item.qty, 0);
+}
+
+function makeEquipmentRow(item) {
+  const row = document.createElement("div");
+  row.className = "equipment-row";
+  row.innerHTML =
+    `<input class="eq-name" type="text" value="" />` +
+    `<input class="eq-price" type="number" min="0" step="10" value="0" />` +
+    `<span class="eq-x">×</span>` +
+    `<input class="eq-qty" type="number" min="0" step="1" value="0" />` +
+    `<button type="button" class="eq-remove" aria-label="remove">×</button>`;
+  row.querySelector(".eq-name").value  = item.name;
+  row.querySelector(".eq-price").value = item.price;
+  row.querySelector(".eq-qty").value   = item.qty;
+  row.querySelectorAll("input").forEach((inp) => inp.addEventListener("input", recalc));
+  row.querySelector(".eq-remove").addEventListener("click", () => { row.remove(); recalc(); });
+  return row;
+}
+
+function renderEquipment(list) {
+  const container = $("equipmentList");
+  container.innerHTML = "";
+  list.forEach((item) => container.appendChild(makeEquipmentRow(item)));
 }
 
 function saveToStorage(v) {
@@ -331,6 +382,7 @@ function renderPlatformPrices(v) {
 
 function recalc() {
   const v = readInputs();
+  $("equipmentTotal").textContent = fmtUSD(v.equipmentCost);
   updateMixWarning(v);
   renderMenuTotals(v);
   const pl = computePL(v);
@@ -347,13 +399,20 @@ function init() {
 
   captureDefaults();
   const saved = loadFromStorage();
+  renderEquipment(saved && Array.isArray(saved.equipment) ? saved.equipment : DEFAULT_EQUIPMENT);
   if (saved) applyValues(saved);
 
   FIELD_IDS.forEach((id) => $(id).addEventListener("input", recalc));
   $("includeStartup").addEventListener("change", recalc);
 
+  $("addEquipmentBtn").addEventListener("click", () => {
+    $("equipmentList").appendChild(makeEquipmentRow({ name: "", price: 0, qty: 1 }));
+    recalc();
+  });
+
   $("resetBtn").addEventListener("click", () => {
     applyValues(DEFAULTS);
+    renderEquipment(DEFAULT_EQUIPMENT);
     $("includeStartup").checked = true;
     recalc();
   });
