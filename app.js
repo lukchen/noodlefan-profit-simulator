@@ -2,11 +2,6 @@
 
 const FIELD_IDS = [
   "daysPerWeek",
-  "dish1Price", "dish1Cost", "dish1Qty",
-  "dish2Price", "dish2Cost", "dish2Qty",
-  "dish3Price", "dish3Cost", "dish3Qty",
-  "dish4Price", "dish4Cost", "dish4Qty",
-  "dish5Price", "dish5Cost", "dish5Qty",
   "pctPickup", "commPickup",
   "pctDoorDash", "commDoorDash",
   "pctUberEats", "commUberEats",
@@ -22,6 +17,16 @@ const FIELD_IDS = [
 const DEFAULTS = {};
 const STORAGE_KEY = "noodlefan-profit-sim-v2";
 const WEEKS_PER_MONTH = 52 / 12;
+
+// Menu is a dynamic list: each dish has a name, selling price, food cost, and daily order count.
+const DEFAULT_MENU = [
+  { name: "天津黄汤牛肉拉面", price: 16, cost: 4, qty: 15 },
+  { name: "台式牛肉面",       price: 16, cost: 4, qty: 5  },
+  { name: "江西精品猪肉炒粉", price: 16, cost: 3, qty: 5  },
+  { name: "江西精品牛肉炒粉", price: 18, cost: 4, qty: 5  },
+  { name: "江西三鲜泡粉",     price: 13, cost: 2, qty: 5  },
+  { name: "江西牛肉泡粉",     price: 16, cost: 4, qty: 10 },
+];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
 const DEFAULT_EQUIPMENT = [
@@ -46,19 +51,52 @@ function readInputs() {
   const v = {};
   FIELD_IDS.forEach((id) => { v[id] = parseFloat($(id).value) || 0; });
   v.includeStartup = $("includeStartup").checked;
+  v.menu = readMenu();
   v.equipment = readEquipment();
   v.equipmentCost = equipmentTotal(v.equipment);
   return v;
 }
 
 function getDishes(v) {
-  return [
-    { qty: v.dish1Qty, price: v.dish1Price, cost: v.dish1Cost },
-    { qty: v.dish2Qty, price: v.dish2Price, cost: v.dish2Cost },
-    { qty: v.dish3Qty, price: v.dish3Price, cost: v.dish3Cost },
-    { qty: v.dish4Qty, price: v.dish4Price, cost: v.dish4Cost },
-    { qty: v.dish5Qty, price: v.dish5Price, cost: v.dish5Cost },
-  ];
+  return v.menu;
+}
+
+// ── Menu list ──
+function readMenu() {
+  const list = [];
+  document.querySelectorAll("#menuBody .menu-row").forEach((row) => {
+    list.push({
+      name:  row.querySelector(".dish-name").value,
+      price: parseFloat(row.querySelector(".dish-price").value) || 0,
+      cost:  parseFloat(row.querySelector(".dish-cost").value)  || 0,
+      qty:   parseFloat(row.querySelector(".dish-qty").value)   || 0,
+    });
+  });
+  return list;
+}
+
+function makeMenuRow(dish) {
+  const row = document.createElement("tr");
+  row.className = "menu-row";
+  row.innerHTML =
+    `<td><input class="dish-name" type="text" value="" /></td>` +
+    `<td><input class="dish-price" type="number" min="0" step="0.5" value="0" /></td>` +
+    `<td><input class="dish-cost" type="number" min="0" step="0.5" value="0" /></td>` +
+    `<td><input class="dish-qty" type="number" min="0" step="1" value="0" /></td>` +
+    `<td class="menu-remove-cell"><button type="button" class="dish-remove" aria-label="remove">×</button></td>`;
+  row.querySelector(".dish-name").value  = dish.name;
+  row.querySelector(".dish-price").value = dish.price;
+  row.querySelector(".dish-cost").value  = dish.cost;
+  row.querySelector(".dish-qty").value   = dish.qty;
+  row.querySelectorAll("input").forEach((inp) => inp.addEventListener("input", recalc));
+  row.querySelector(".dish-remove").addEventListener("click", () => { row.remove(); recalc(); });
+  return row;
+}
+
+function renderMenu(list) {
+  const body = $("menuBody");
+  body.innerHTML = "";
+  list.forEach((dish) => body.appendChild(makeMenuRow(dish)));
 }
 
 // ── Equipment list ──
@@ -331,17 +369,15 @@ function renderSensitivityChart(v) {
 function renderPlatformPrices(v) {
   const t = window.NoodleI18N.t;
   const dishes = getDishes(v);
-  const dishKeys = ["sm.dish1","sm.dish2","sm.dish3","sm.dish4","sm.dish5"];
 
-  // Update dish column headers (short: last Chinese segment)
-  dishKeys.forEach((key, i) => {
-    const el = $("pg-dish" + (i+1) + "-name");
-    if (el) {
-      const full = t(key);
-      // Use Chinese portion if bilingual (after last space), else full
-      const parts = full.split(" ");
-      el.textContent = parts[parts.length - 1] || full;
-    }
+  // Rebuild dish column headers from the current menu
+  const headRow = $("priceGuideHeadRow");
+  headRow.querySelectorAll(".pg-dish-col").forEach((el) => el.remove());
+  dishes.forEach((d) => {
+    const th = document.createElement("th");
+    th.className = "pg-dish-col";
+    th.textContent = d.name;
+    headRow.appendChild(th);
   });
 
   const channels = [
@@ -399,11 +435,17 @@ function init() {
 
   captureDefaults();
   const saved = loadFromStorage();
+  renderMenu(saved && Array.isArray(saved.menu) ? saved.menu : DEFAULT_MENU);
   renderEquipment(saved && Array.isArray(saved.equipment) ? saved.equipment : DEFAULT_EQUIPMENT);
   if (saved) applyValues(saved);
 
   FIELD_IDS.forEach((id) => $(id).addEventListener("input", recalc));
   $("includeStartup").addEventListener("change", recalc);
+
+  $("addDishBtn").addEventListener("click", () => {
+    $("menuBody").appendChild(makeMenuRow({ name: "", price: 0, cost: 0, qty: 0 }));
+    recalc();
+  });
 
   $("addEquipmentBtn").addEventListener("click", () => {
     $("equipmentList").appendChild(makeEquipmentRow({ name: "", price: 0, qty: 1 }));
@@ -412,6 +454,7 @@ function init() {
 
   $("resetBtn").addEventListener("click", () => {
     applyValues(DEFAULTS);
+    renderMenu(DEFAULT_MENU);
     renderEquipment(DEFAULT_EQUIPMENT);
     $("includeStartup").checked = true;
     recalc();
