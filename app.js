@@ -22,8 +22,8 @@ const WEEKS_PER_MONTH = 52 / 12;
 const DEFAULT_MENU = [
   { name: "天津黄汤牛肉拉面", price: 16, cost: 4, qty: 15 },
   { name: "台式牛肉面",       price: 16, cost: 4, qty: 5  },
-  { name: "江西精品猪肉炒粉", price: 16, cost: 3, qty: 5  },
-  { name: "江西精品牛肉炒粉", price: 18, cost: 4, qty: 5  },
+  { name: "江西精品猪肉炒粉", price: 16, cost: 3, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 18, cost: 4, qty: 10 },
   { name: "江西三鲜泡粉",     price: 13, cost: 2, qty: 5  },
   { name: "江西牛肉泡粉",     price: 16, cost: 4, qty: 10 },
 ];
