@@ -248,6 +248,31 @@ body {
   border-top: 2px solid var(--border);
 }
 .menu-totals-row strong { color: var(--text); font-size: 12px; }
+.menu-table input.dish-name {
+  width: 100%;
+  min-width: 0;
+  padding: 4px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  text-align: left;
+  background: var(--bg);
+}
+.menu-table input.dish-name:focus { outline: 2px solid var(--red); background: white; }
+.menu-table .menu-remove-col { width: 26px; }
+.menu-table td.menu-remove-cell { text-align: center; padding-left: 0; padding-right: 0; }
+.dish-remove {
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  color: var(--bad);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.dish-remove:hover { background: rgba(192,57,43,0.1); }
 
 /* ── RESULTS COLUMN ── */
 .results {
@@ -461,8 +486,10 @@ canvas { max-width: 100%; }
   /* Dish name: takes remaining space; value cols: fixed width */
   .menu-table th:nth-child(2), .menu-table td:nth-child(2),
   .menu-table th:nth-child(3), .menu-table td:nth-child(3),
-  .menu-table th:nth-child(4), .menu-table td:nth-child(4) { width: 56px; }
-  .menu-table input[type="number"] { width: 46px; font-size: 11px; padding: 3px 4px; }
+  .menu-table th:nth-child(4), .menu-table td:nth-child(4) { width: 48px; }
+  .menu-table th:nth-child(5), .menu-table td:nth-child(5) { width: 22px; }
+  .menu-table input[type="number"] { width: 42px; font-size: 11px; padding: 3px 4px; }
+  .menu-table input.dish-name { font-size: 11px; padding: 3px 4px; }
 
   /* Price guide table stays scrollable */
   .price-guide-table { min-width: 360px; }
