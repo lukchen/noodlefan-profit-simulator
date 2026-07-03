@@ -27,6 +27,7 @@
       "sm.aovLabel": "AOV:",
       "sm.cogsLabel": "Food cost:",
       "sm.perDay": "/day",
+      "sm.addDish": "+ Add dish",
 
       "s2.title": "3. Order Channel Mix",
       "s2.hint": "Percent of orders through each channel — should total 100%.",
@@ -155,6 +156,7 @@
       "sm.aovLabel": "客单价：",
       "sm.cogsLabel": "食材成本：",
       "sm.perDay": "单/天",
+      "sm.addDish": "+ 添加菜品",
 
       "s2.title": "3. 订单渠道占比",
       "s2.hint": "各渠道订单占比 — 总和应为 100%。",
