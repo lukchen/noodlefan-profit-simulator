@@ -31,10 +31,10 @@ const DEFAULT_MENU = [
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
 const DEFAULT_EQUIPMENT = [
   { name: "独眼灶", price: 500, qty: 3 },
-  { name: "六眼灶", price: 800, qty: 1 },
-  { name: "汤锅",   price: 100, qty: 2 },
+  { name: "六眼灶", price: 1200, qty: 1 },
+  { name: "汤锅",   price: 100, qty: 3 },
   { name: "炒锅",   price: 100, qty: 1 },
-  { name: "煮锅",   price: 60,  qty: 4 },
+  { name: "浇头煮锅", price: 60,  qty: 4 },
 ];
 
 let breakdownChart = null;
