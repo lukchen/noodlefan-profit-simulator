@@ -19,6 +19,7 @@ const STORAGE_KEY = "noodlefan-profit-sim-v2";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu is a dynamic list: each dish has a name, selling price, food cost, and daily order count.
+// Source of truth: Notion "菜品定价 Menu Pricing (data truth)" table. Sync manually.
 const DEFAULT_MENU = [
   { name: "天津黄汤牛肉拉面", price: 16, cost: 4, qty: 15 },
   { name: "台式牛肉面",       price: 16, cost: 4, qty: 5  },
@@ -26,6 +27,10 @@ const DEFAULT_MENU = [
   { name: "江西精品牛肉炒粉", price: 18, cost: 4, qty: 5  },
   { name: "江西三鲜泡粉",     price: 13, cost: 2, qty: 5  },
   { name: "江西牛肉泡粉",     price: 16, cost: 4, qty: 10 },
+  { name: "罐装可乐",         price: 2,  cost: 0.68, qty: 5 },
+  { name: "罐装Diet可乐",     price: 2,  cost: 0.68, qty: 5 },
+  { name: "罐装雪碧",         price: 2,  cost: 0.68, qty: 3 },
+  { name: "罐装芬达",         price: 2,  cost: 0.87, qty: 3 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
