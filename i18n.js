@@ -12,8 +12,10 @@
       "s1.title": "1. Operating Schedule",
       "s1.daysPerWeek": "Days open per week",
 
-      "sm.title": "2. Menu & Daily Sales Mix",
+      "sm.title": "Main Dishes",
       "sm.hint": "Set the selling price, ingredient cost, and expected daily orders for each dish.",
+      "dr.title": "Drinks",
+      "dr.addDrink": "+ Add drink",
       "sm.col.dish": "Dish",
       "sm.col.price": "Price ($)",
       "sm.col.cost": "Cost ($)",
@@ -141,8 +143,10 @@
       "s1.title": "1. 营业设置",
       "s1.daysPerWeek": "每周营业天数",
 
-      "sm.title": "2. 菜单 & 每日销售组合",
+      "sm.title": "主菜品",
       "sm.hint": "设置每道菜的售价、食材成本及预计每日销售数量。",
+      "dr.title": "饮料",
+      "dr.addDrink": "+ 添加饮料",
       "sm.col.dish": "菜品",
       "sm.col.price": "售价 ($)",
       "sm.col.cost": "成本 ($)",
