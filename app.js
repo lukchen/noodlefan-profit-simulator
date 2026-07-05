@@ -18,19 +18,22 @@ const DEFAULTS = {};
 const STORAGE_KEY = "noodlefan-profit-sim-v2";
 const WEEKS_PER_MONTH = 52 / 12;
 
-// Menu is a dynamic list: each dish has a name, selling price, food cost, and daily order count.
+// Menu is split into two dynamic categories: 主菜品 (mains) and 饮料 (drinks).
+// Each dish has a name, selling price, food cost, and daily order count.
 // Source of truth: Notion "菜品定价 Menu Pricing (data truth)" table. Sync manually.
-const DEFAULT_MENU = [
+const DEFAULT_MAINS = [
   { name: "天津黄汤牛肉拉面", price: 16, cost: 4, qty: 15 },
   { name: "台式牛肉面",       price: 16, cost: 4, qty: 5  },
   { name: "江西精品猪肉炒粉", price: 16, cost: 3, qty: 8  },
   { name: "江西精品牛肉炒粉", price: 18, cost: 4, qty: 5  },
   { name: "江西三鲜泡粉",     price: 13, cost: 2, qty: 5  },
   { name: "江西牛肉泡粉",     price: 16, cost: 4, qty: 10 },
-  { name: "罐装可乐",         price: 2,  cost: 0.68, qty: 5 },
-  { name: "罐装Diet可乐",     price: 2,  cost: 0.68, qty: 5 },
-  { name: "罐装雪碧",         price: 2,  cost: 0.68, qty: 3 },
-  { name: "罐装芬达",         price: 2,  cost: 0.87, qty: 3 },
+];
+const DEFAULT_DRINKS = [
+  { name: "罐装可乐",       price: 2, cost: 0.68, qty: 5 },
+  { name: "罐装Diet可乐",   price: 2, cost: 0.68, qty: 5 },
+  { name: "罐装雪碧",       price: 2, cost: 0.68, qty: 3 },
+  { name: "罐装芬达",       price: 2, cost: 0.87, qty: 3 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
@@ -56,20 +59,23 @@ function readInputs() {
   const v = {};
   FIELD_IDS.forEach((id) => { v[id] = parseFloat($(id).value) || 0; });
   v.includeStartup = $("includeStartup").checked;
-  v.menu = readMenu();
+  v.mains  = readMenu("menuBody");
+  v.drinks = readMenu("drinkBody");
+  v.menu   = v.mains.concat(v.drinks);
   v.equipment = readEquipment();
   v.equipmentCost = equipmentTotal(v.equipment);
   return v;
 }
 
+// P&L, break-even, sensitivity, and platform prices operate on ALL items (mains + drinks).
 function getDishes(v) {
   return v.menu;
 }
 
-// ── Menu list ──
-function readMenu() {
+// ── Menu lists (mains + drinks share the same row shape) ──
+function readMenu(bodyId) {
   const list = [];
-  document.querySelectorAll("#menuBody .menu-row").forEach((row) => {
+  document.querySelectorAll("#" + bodyId + " .menu-row").forEach((row) => {
     list.push({
       name:  row.querySelector(".dish-name").value,
       price: parseFloat(row.querySelector(".dish-price").value) || 0,
@@ -98,8 +104,8 @@ function makeMenuRow(dish) {
   return row;
 }
 
-function renderMenu(list) {
-  const body = $("menuBody");
+function renderMenu(bodyId, list) {
+  const body = $(bodyId);
   body.innerHTML = "";
   list.forEach((dish) => body.appendChild(makeMenuRow(dish)));
 }
@@ -254,17 +260,22 @@ function updateMixWarning(v) {
   $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? window.NoodleI18N.t("mix.warning") : "";
 }
 
-function renderMenuTotals(v) {
-  const dishes       = getDishes(v);
+// Blended stats are computed per category so drinks don't skew the mains' AOV / food-cost %.
+function renderCategoryTotals(dishes, qtyId, aovId, cogsId) {
   const totalQty     = dishes.reduce((s, d) => s + d.qty,           0);
   const totalRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
   const totalCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
   const aov          = totalQty    > 0 ? totalRevenue / totalQty     : 0;
   const cogsPct      = totalRevenue > 0 ? (totalCogs / totalRevenue) * 100 : 0;
 
-  $("menu-total-qty").textContent  = totalQty;
-  $("menu-aov").textContent        = "$" + aov.toFixed(2);
-  $("menu-cogs-pct").textContent   = cogsPct.toFixed(1) + "%";
+  $(qtyId).textContent  = totalQty;
+  $(aovId).textContent  = "$" + aov.toFixed(2);
+  $(cogsId).textContent = cogsPct.toFixed(1) + "%";
+}
+
+function renderMenuTotals(v) {
+  renderCategoryTotals(v.mains,  "menu-total-qty",  "menu-aov",  "menu-cogs-pct");
+  renderCategoryTotals(v.drinks, "drink-total-qty", "drink-aov", "drink-cogs-pct");
 }
 
 function renderResults(pl, breakEvenDay) {
@@ -440,7 +451,8 @@ function init() {
 
   captureDefaults();
   const saved = loadFromStorage();
-  renderMenu(saved && Array.isArray(saved.menu) ? saved.menu : DEFAULT_MENU);
+  renderMenu("menuBody",  saved && Array.isArray(saved.mains)  ? saved.mains  : DEFAULT_MAINS);
+  renderMenu("drinkBody", saved && Array.isArray(saved.drinks) ? saved.drinks : DEFAULT_DRINKS);
   renderEquipment(saved && Array.isArray(saved.equipment) ? saved.equipment : DEFAULT_EQUIPMENT);
   if (saved) applyValues(saved);
 
@@ -452,6 +464,11 @@ function init() {
     recalc();
   });
 
+  $("addDrinkBtn").addEventListener("click", () => {
+    $("drinkBody").appendChild(makeMenuRow({ name: "", price: 0, cost: 0, qty: 0 }));
+    recalc();
+  });
+
   $("addEquipmentBtn").addEventListener("click", () => {
     $("equipmentList").appendChild(makeEquipmentRow({ name: "", price: 0, qty: 1 }));
     recalc();
@@ -459,7 +476,8 @@ function init() {
 
   $("resetBtn").addEventListener("click", () => {
     applyValues(DEFAULTS);
-    renderMenu(DEFAULT_MENU);
+    renderMenu("menuBody",  DEFAULT_MAINS);
+    renderMenu("drinkBody", DEFAULT_DRINKS);
     renderEquipment(DEFAULT_EQUIPMENT);
     $("includeStartup").checked = true;
     recalc();
