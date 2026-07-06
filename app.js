@@ -26,7 +26,7 @@ const DEFAULT_MAINS = [
   { name: "台式牛肉面",       price: 16, cost: 4, qty: 5  },
   { name: "江西精品猪肉炒粉", price: 14, cost: 3, qty: 8  },
   { name: "江西精品牛肉炒粉", price: 16, cost: 4, qty: 5  },
-  { name: "江西三鲜泡粉",     price: 13, cost: 2, qty: 5  },
+  { name: "江西三鲜泡粉",     price: 10, cost: 2, qty: 5  },
   { name: "江西牛肉泡粉",     price: 16, cost: 4, qty: 10 },
 ];
 const DEFAULT_DRINKS = [
