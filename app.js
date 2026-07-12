@@ -40,10 +40,12 @@ const DEFAULT_DRINKS = [
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
 const DEFAULT_EQUIPMENT = [
   { name: "独眼灶", price: 500, qty: 3 },
-  { name: "六眼灶", price: 1200, qty: 1 },
+  { name: "六眼灶", price: 1300, qty: 1 },
   { name: "汤锅",   price: 100, qty: 3 },
   { name: "炒锅",   price: 100, qty: 1 },
   { name: "浇头煮锅", price: 60,  qty: 4 },
+  { name: "冷鲜冰箱", price: 1400, qty: 1 },
+  { name: "冷藏冰箱", price: 1900, qty: 1 },
 ];
 
 let breakdownChart = null;
