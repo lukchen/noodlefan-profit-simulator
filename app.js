@@ -10,7 +10,7 @@ const FIELD_IDS = [
   "numStaff", "hourlyWage", "hoursPerWeek",
   "marketingMonthly",
   "rent", "utilities",
-  "permitsCost", "otherPermitsCost", "initialInventoryCost", "smallwaresCost", "amortMonths",
+  "permitsCost", "otherPermitsCost", "initialInventoryCost", "smallwaresCost", "firstMonthRentCredit", "amortMonths",
   "taxRate", "sepIRAPct", "sec179",
 ];
 
@@ -209,7 +209,7 @@ function computePL(v, scaleOverride) {
   const rentUtilities = v.rent + v.utilities;
   const marketing    = v.marketingMonthly;
 
-  const startupTotal   = v.equipmentCost + v.permitsCost + v.otherPermitsCost + v.initialInventoryCost + v.smallwaresCost;
+  const startupTotal   = v.equipmentCost + v.permitsCost + v.otherPermitsCost + v.initialInventoryCost + v.smallwaresCost - v.firstMonthRentCredit;
   const startupMonthly = v.amortMonths > 0 ? startupTotal / v.amortMonths : 0;
   const startupInPL    = v.includeStartup ? startupMonthly : 0;
 
@@ -249,7 +249,7 @@ function computeBreakEven(v) {
     * v.daysPerWeek * WEEKS_PER_MONTH;
 
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
-  const startupTotal = v.equipmentCost + v.permitsCost + v.otherPermitsCost + v.initialInventoryCost + v.smallwaresCost;
+  const startupTotal = v.equipmentCost + v.permitsCost + v.otherPermitsCost + v.initialInventoryCost + v.smallwaresCost - v.firstMonthRentCredit;
   const startupInPL  = v.includeStartup && v.amortMonths > 0 ? startupTotal / v.amortMonths : 0;
   const fixedCosts   = v.rent + v.utilities + labor + v.marketingMonthly + startupInPL;
 
