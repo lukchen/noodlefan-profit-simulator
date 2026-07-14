@@ -9,6 +9,7 @@ const FIELD_IDS = [
   "packagingPerOrder",
   "numStaff", "hourlyWage", "hoursPerWeek",
   "marketingMonthly",
+  "orderProcessingFee",
   "rent", "utilities",
   "permitsCost", "otherPermitsCost", "initialInventoryCost", "smallwaresCost", "firstMonthRentCredit", "amortMonths",
   "taxRate", "sepIRAPct", "sec179",
@@ -208,12 +209,13 @@ function computePL(v, scaleOverride) {
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
   const rentUtilities = v.rent + v.utilities;
   const marketing    = v.marketingMonthly;
+  const orderFee     = v.orderProcessingFee;
 
   const startupTotal   = v.equipmentCost + v.permitsCost + v.otherPermitsCost + v.initialInventoryCost + v.smallwaresCost - v.firstMonthRentCredit;
   const startupMonthly = v.amortMonths > 0 ? startupTotal / v.amortMonths : 0;
   const startupInPL    = v.includeStartup ? startupMonthly : 0;
 
-  const totalCosts = cogs + platformFees + packaging + labor + rentUtilities + marketing + startupInPL;
+  const totalCosts = cogs + platformFees + packaging + labor + rentUtilities + marketing + orderFee + startupInPL;
   const netProfit  = revenue - totalCosts;
   const margin     = revenue > 0 ? (netProfit / revenue) * 100 : 0;
 
@@ -226,7 +228,7 @@ function computePL(v, scaleOverride) {
 
   return {
     ordersPerDay, ordersPerMonth, revenue, cogs, platformFees, packaging, labor,
-    rentUtilities, marketing, startupMonthly, startupInPL, netProfit, margin,
+    rentUtilities, marketing, orderFee, startupMonthly, startupInPL, netProfit, margin,
     startupTotal, sepDeduction, sec179Monthly, taxableIncome, incomeTax, netProfitAfterTax,
   };
 }
@@ -251,7 +253,7 @@ function computeBreakEven(v) {
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
   const startupTotal = v.equipmentCost + v.permitsCost + v.otherPermitsCost + v.initialInventoryCost + v.smallwaresCost - v.firstMonthRentCredit;
   const startupInPL  = v.includeStartup && v.amortMonths > 0 ? startupTotal / v.amortMonths : 0;
-  const fixedCosts   = v.rent + v.utilities + labor + v.marketingMonthly + startupInPL;
+  const fixedCosts   = v.rent + v.utilities + labor + v.marketingMonthly + v.orderProcessingFee + startupInPL;
 
   if (contributionPerScale <= 0) return Infinity;
   return ordersPerDay * (fixedCosts / contributionPerScale);
@@ -289,6 +291,7 @@ function renderResults(pl, breakEvenDay) {
   $("out-labor").textContent      = "-" + fmtUSD(pl.labor);
   $("out-rent").textContent       = "-" + fmtUSD(pl.rentUtilities);
   $("out-marketing").textContent  = "-" + fmtUSD(pl.marketing);
+  $("out-orderfee").textContent   = "-" + fmtUSD(pl.orderFee);
   $("out-startup").textContent    = "-" + fmtUSD(pl.startupInPL);
 
   const netEl = $("out-netprofit");
@@ -322,10 +325,10 @@ function renderBreakdownChart(pl) {
   const ctx = $("breakdownChart");
   const t = window.NoodleI18N.t;
   const data = {
-    labels: [t("chart.cogs"), t("chart.platform"), t("chart.packaging"), t("chart.labor"), t("chart.rent"), t("chart.marketing"), t("chart.startup")],
+    labels: [t("chart.cogs"), t("chart.platform"), t("chart.packaging"), t("chart.labor"), t("chart.rent"), t("chart.marketing"), t("chart.orderfee"), t("chart.startup")],
     datasets: [{
-      data: [pl.cogs, pl.platformFees, pl.packaging, pl.labor, pl.rentUtilities, pl.marketing, pl.startupInPL],
-      backgroundColor: ["#e8a33d", "#c0392b", "#8d6e63", "#6d8b74", "#5b7c99", "#9b59b6", "#bdb2a7"],
+      data: [pl.cogs, pl.platformFees, pl.packaging, pl.labor, pl.rentUtilities, pl.marketing, pl.orderFee, pl.startupInPL],
+      backgroundColor: ["#e8a33d", "#c0392b", "#8d6e63", "#6d8b74", "#5b7c99", "#9b59b6", "#16a085", "#bdb2a7"],
     }],
   };
   if (breakdownChart) {
