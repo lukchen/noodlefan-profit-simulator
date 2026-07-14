@@ -50,8 +50,22 @@ const DEFAULT_EQUIPMENT = [
   { name: "冷藏冰箱", price: 1900, qty: 1 },
 ];
 
+// Food-cost split by 采购清单 category (monthly procurement $, priced items only).
+// STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-14).
+// NOTE: different basis than the order-based COGS above.
+const FOOD_COST_BY_CATEGORY = [
+  { key: "cat.meat",   value: 5623 },
+  { key: "cat.staple", value: 2073 },
+  { key: "cat.sauce",  value: 843 },
+  { key: "cat.spice",  value: 393 },
+  { key: "cat.drink",  value: 330 },
+  { key: "cat.veg",    value: 256 },
+  { key: "cat.dry",    value: 243 },
+];
+
 let breakdownChart = null;
 let sensitivityChart = null;
+let foodCostChart = null;
 
 function $(id) { return document.getElementById(id); }
 
@@ -352,6 +366,34 @@ function renderBreakdownChart(pl) {
   }
 }
 
+// Static food-cost split by 采购清单 category (procurement basis).
+function renderFoodCostChart() {
+  const ctx = $("foodCostChart");
+  if (!ctx) return;
+  const t = window.NoodleI18N.t;
+  const data = {
+    labels: FOOD_COST_BY_CATEGORY.map((c) => t(c.key)),
+    datasets: [{
+      data: FOOD_COST_BY_CATEGORY.map((c) => c.value),
+      backgroundColor: ["#c0392b", "#e8a33d", "#9b59b6", "#5b7c99", "#16a085", "#6d8b74", "#bdb2a7"],
+    }],
+  };
+  if (foodCostChart) {
+    foodCostChart.data = data;
+    foodCostChart.update();
+  } else {
+    foodCostChart = new Chart(ctx, {
+      type: "doughnut",
+      data,
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: { legend: { position: "bottom", labels: { boxWidth: 12, font: { size: 11 } } } },
+      },
+    });
+  }
+}
+
 function renderSensitivityChart(v) {
   const ctx = $("sensitivityChart");
   const t = window.NoodleI18N.t;
@@ -452,6 +494,7 @@ function recalc() {
   const breakEvenDay = computeBreakEven(v);
   renderResults(pl, breakEvenDay);
   renderBreakdownChart(pl);
+  renderFoodCostChart();
   renderSensitivityChart(v);
   renderPlatformPrices(v);
   saveToStorage(v);
