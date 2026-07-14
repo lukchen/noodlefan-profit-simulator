@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v2";
+const STORAGE_KEY = "noodlefan-profit-sim-v3";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu is split into two dynamic categories: 主菜品 (mains) and 饮料 (drinks).
@@ -189,6 +189,9 @@ function computePL(v, scaleOverride) {
 
   const ordersPerDay = dishes.reduce((s, d) => s + d.qty, 0) * scale;
   const ordersPerMonth = ordersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
+  // Packaging applies to main-dish orders only — drinks are canned and use no separate packaging.
+  const mainOrdersPerDay   = v.mains.reduce((s, d) => s + d.qty, 0) * scale;
+  const mainOrdersPerMonth = mainOrdersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
   const dailyRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
   const dailyCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
   const revenue = dailyRevenue * scale * v.daysPerWeek * WEEKS_PER_MONTH;
@@ -205,7 +208,7 @@ function computePL(v, scaleOverride) {
     revenue * ueShare     * (v.commUberEats / 100) +
     revenue * ghShare     * (v.commGrubhub  / 100);
 
-  const packaging    = ordersPerMonth * v.packagingPerOrder;
+  const packaging    = mainOrdersPerMonth * v.packagingPerOrder;
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
   const rentUtilities = v.rent + v.utilities;
   const marketing    = v.marketingMonthly;
@@ -237,6 +240,7 @@ function computePL(v, scaleOverride) {
 function computeBreakEven(v) {
   const dishes       = getDishes(v);
   const ordersPerDay = dishes.reduce((s, d) => s + d.qty, 0);
+  const mainOrdersPerDay = v.mains.reduce((s, d) => s + d.qty, 0);
   const dailyRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
   const dailyCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
 
@@ -247,7 +251,7 @@ function computeBreakEven(v) {
     (v.pctGrubhub  / 100) * (v.commGrubhub  / 100);
 
   const contributionPerScale =
-    (dailyRevenue * (1 - blendedFeePct) - dailyCogs - v.packagingPerOrder * ordersPerDay)
+    (dailyRevenue * (1 - blendedFeePct) - dailyCogs - v.packagingPerOrder * mainOrdersPerDay)
     * v.daysPerWeek * WEEKS_PER_MONTH;
 
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
