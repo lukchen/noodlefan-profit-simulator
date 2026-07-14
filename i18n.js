@@ -53,7 +53,8 @@
       "s4.hint": "Typical noodle/rice-noodle restaurants run 28–35% COGS.",
 
       "s5.title": "5. Packaging",
-      "s5.packaging": "Packaging cost per order ($)",
+      "s5.packaging": "Packaging cost per main-dish order ($)",
+      "s5.hint": "Applied to main-dish orders only — canned drinks use no separate packaging. Derived from the procurement sheet (外卖包装 monthly ÷ main orders).",
 
       "s6.title": "6. Labor",
       "s6.numStaff": "Number of staff",
@@ -190,7 +191,8 @@
       "s4.hint": "典型米粉/面馆食材成本占比通常为 28%–35%。",
 
       "s5.title": "5. 包装",
-      "s5.packaging": "每单包装成本 ($)",
+      "s5.packaging": "每单(主菜)包装成本 ($)",
+      "s5.hint": "只按主菜订单计算 — 罐装饮料不占单独包装。取自采购清单（外卖包装月采购额 ÷ 主菜订单量）。",
 
       "s6.title": "6. 人工",
       "s6.numStaff": "员工人数",
