@@ -193,6 +193,21 @@
           <p class="hint" data-i18n="s6.hint">Treated as a fixed monthly cost (scheduled regardless of order volume).</p>
         </div>
         <div class="card">
+          <h2 data-i18n="s7.title">Marketing &amp; Promo</h2>
+          <div class="field">
+            <label for="marketingMonthly" data-i18n="s7.marketing">Monthly marketing spend ($)</label>
+            <input type="number" id="marketingMonthly" value="200" min="0" step="25" />
+          </div>
+        </div>
+        <div class="card">
+          <h2 data-i18n="s10.title">Platform / Order Fees</h2>
+          <div class="field">
+            <label for="orderProcessingFee" data-i18n="s10.orderfee">Order processing fee ($/mo, CloudKitchens)</label>
+            <input type="number" id="orderProcessingFee" value="300" min="0" step="25" />
+          </div>
+          <p class="hint" data-i18n="s10.hint">Fixed monthly fee charged by CloudKitchens for order processing / POS.</p>
+        </div>
+        <div class="card">
           <h2 data-i18n="s9.title">Income Tax</h2>
           <div class="field">
             <label for="taxRate" data-i18n="s9.taxRate">Est. tax rate (%)</label>
@@ -213,8 +228,7 @@
         <div class="card">
           <h2 data-i18n="s7.title">Marketing &amp; Promo</h2>
           <div class="field">
-            <label for="marketingMonthly" data-i18n="s7.marketing">Monthly marketing spend ($)</label>
-            <input type="number" id="marketingMonthly" value="200" min="0" step="25" />
+            <label for="marketingMonthly2" style="display:none"></label>
           </div>
         </div>
       </div>
@@ -277,6 +291,7 @@
             <tr class="pl-cost"><td data-i18n="pl.labor">Labor</td><td id="out-labor">$0</td></tr>
             <tr class="pl-cost"><td data-i18n="pl.rent">Rent &amp; utilities</td><td id="out-rent">$0</td></tr>
             <tr class="pl-cost"><td data-i18n="pl.marketing">Marketing</td><td id="out-marketing">$0</td></tr>
+            <tr class="pl-cost"><td data-i18n="pl.orderfee">Order processing fee</td><td id="out-orderfee">$0</td></tr>
             <tr class="pl-cost"><td data-i18n="pl.startup">Startup (amortized)</td><td id="out-startup">$0</td></tr>
             <tr class="total-row"><td data-i18n="pl.netprofit">Net profit / month</td><td id="out-netprofit">$0</td></tr>
             <tr><td data-i18n="pl.margin">Net margin</td><td id="out-margin">0%</td></tr>
@@ -307,7 +322,7 @@
   </footer>
 
   <script src="chart.umd.min.js?v=3"></script>
-  <script src="i18n.js?v=14"></script>
-  <script src="app.js?v=21"></script>
+  <script src="i18n.js?v=15"></script>
+  <script src="app.js?v=22"></script>
 </body>
 </html>
