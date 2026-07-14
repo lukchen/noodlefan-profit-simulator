@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v5";
+const STORAGE_KEY = "noodlefan-profit-sim-v6";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu is split into two dynamic categories: 主菜品 (mains) and 饮料 (drinks).
@@ -43,7 +43,7 @@ const DEFAULT_DRINKS = [
 const DEFAULT_EQUIPMENT = [
   { name: "独眼灶", price: 500, qty: 3 },
   { name: "六眼灶", price: 1300, qty: 1 },
-  { name: "汤锅",   price: 100, qty: 3 },
+  { name: "汤锅",   price: 200, qty: 3 },
   { name: "炒锅",   price: 100, qty: 1 },
   { name: "浇头煮锅", price: 60,  qty: 4 },
   { name: "冷鲜冰箱", price: 2000, qty: 1 },
