@@ -140,6 +140,16 @@
       "chart.sensitivityLabel": "Net profit / month ($)",
       "chart.perDaySuffix": "/day",
 
+      "chart.foodCostTitle": "Food Cost by Category",
+      "chart.foodCostNote": "Monthly procurement $ from the 采购清单 (priced items only). Different basis than the COGS above — use it to see where ingredient spend goes.",
+      "cat.meat": "Meat & bones",
+      "cat.staple": "Noodles & rice",
+      "cat.sauce": "Sauces & seasoning",
+      "cat.spice": "Spices",
+      "cat.drink": "Drinks",
+      "cat.veg": "Vegetables & fruit",
+      "cat.dry": "Dry goods",
+
       footer: "NoodleFan Profit Simulator — built for evaluating a CloudKitchens Boston (delivery + pickup only) launch. All figures are editable estimates; verify rent and fees with your actual contracts.",
     },
 
@@ -277,6 +287,16 @@
       "chart.startup": "启动成本（分摊）",
       "chart.sensitivityLabel": "月净利润 ($)",
       "chart.perDaySuffix": "单/天",
+
+      "chart.foodCostTitle": "食材成本按类别",
+      "chart.foodCostNote": "取自采购清单的月采购额（仅含已定价项）。与上方 COGS 口径不同——用来看食材钱花在哪。",
+      "cat.meat": "肉·骨类",
+      "cat.staple": "主食面米",
+      "cat.sauce": "调料酱汁",
+      "cat.spice": "香料",
+      "cat.drink": "饮料",
+      "cat.veg": "蔬果",
+      "cat.dry": "干货",
 
       footer: "NoodleFan 利润模拟器 — 用于评估在波士顿 CloudKitchens（仅外卖与自取）开店方案。所有数值均为可编辑的估算值，请以实际合同为准。",
     },
