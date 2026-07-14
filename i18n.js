@@ -64,6 +64,10 @@
       "s7.title": "7. Marketing & Promo",
       "s7.marketing": "Monthly marketing spend ($)",
 
+      "s10.title": "Platform / Order Fees",
+      "s10.orderfee": "Order processing fee ($/mo, CloudKitchens)",
+      "s10.hint": "Fixed monthly fee charged by CloudKitchens for order processing / POS.",
+
       "s8.title": "8. One-Time Startup Costs",
       "s8.equipment": "Kitchen Equipment",
       "s8.equipTotal": "Subtotal:",
@@ -114,6 +118,7 @@
       "pl.labor": "Labor",
       "pl.rent": "Rent & utilities",
       "pl.marketing": "Marketing",
+      "pl.orderfee": "Order processing fee",
       "pl.startup": "Startup cost (amortized)",
       "pl.netprofit": "Net profit / month",
       "pl.margin": "Net margin",
@@ -129,6 +134,7 @@
       "chart.labor": "Labor",
       "chart.rent": "Rent & utilities",
       "chart.marketing": "Marketing",
+      "chart.orderfee": "Order processing fee",
       "chart.startup": "Startup (amortized)",
       "chart.sensitivityLabel": "Net profit / month ($)",
       "chart.perDaySuffix": "/day",
@@ -195,6 +201,10 @@
       "s7.title": "7. 营销推广",
       "s7.marketing": "每月营销支出 ($)",
 
+      "s10.title": "平台 / 订单费用",
+      "s10.orderfee": "订单处理费 ($/月，CloudKitchens)",
+      "s10.hint": "CloudKitchens 收取的固定月度订单处理 / POS 费用。",
+
       "s8.title": "8. 一次性启动成本",
       "s8.equipment": "厨房设备",
       "s8.equipTotal": "小计：",
@@ -245,6 +255,7 @@
       "pl.labor": "人工",
       "pl.rent": "租金与水电",
       "pl.marketing": "营销",
+      "pl.orderfee": "订单处理费",
       "pl.startup": "启动成本（分摊）",
       "pl.netprofit": "月净利润",
       "pl.margin": "净利率",
@@ -260,6 +271,7 @@
       "chart.labor": "人工",
       "chart.rent": "租金与水电",
       "chart.marketing": "营销",
+      "chart.orderfee": "订单处理费",
       "chart.startup": "启动成本（分摊）",
       "chart.sensitivityLabel": "月净利润 ($)",
       "chart.perDaySuffix": "单/天",
