@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v8";
+const STORAGE_KEY = "noodlefan-profit-sim-v9";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu is split into two dynamic categories: 主菜品 (mains) and 饮料 (drinks).
@@ -55,13 +55,13 @@ const DEFAULT_EQUIPMENT = [
 
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
 // STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-18).
-// 肉·骨类 now includes 鸡蛋 $208/月 (616 个/周).
+// 肉·骨类 now includes 鸡蛋 $208/月 (616 个/周). 香料 八角 changed 联发 $9.53/lb.
 // NOTE: different basis than the order-based COGS above.
 const FOOD_COST_BY_CATEGORY = [
   { key: "cat.meat",   value: 5596 },
   { key: "cat.staple", value: 1999 },
   { key: "cat.sauce",  value: 843 },
-  { key: "cat.spice",  value: 393 },
+  { key: "cat.spice",  value: 244 },
   { key: "cat.drink",  value: 330 },
   { key: "cat.veg",    value: 257 },
   { key: "cat.dry",    value: 243 },
