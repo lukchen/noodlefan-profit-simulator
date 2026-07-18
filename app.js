@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v7";
+const STORAGE_KEY = "noodlefan-profit-sim-v8";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu is split into two dynamic categories: 主菜品 (mains) and 饮料 (drinks).
@@ -24,14 +24,16 @@ const WEEKS_PER_MONTH = 52 / 12;
 // Source of truth: Drive 菜品定价 sheet. 成本 incl. broth bone (2026-07-14);
 // 炒粉 uses 联发 generic rice noodle ($1.81/lb), 泡粉 uses 麻姑 ($3.63/lb). Sync manually.
 // 2026-07-18: 炒粉 portion revised — 干米粉 130g, 肉丝 100g, 蔬菜合计 150g.
+// 2026-07-18: 成本计入鸡蛋（联发 $0.0778/个）— 炒粉 2 个 $0.16；拉面/台牛/卤肉饭
+// 各 1 个默认蛋，茶叶蛋/煎蛋混合均摊 $0.11。泡粉不含蛋。
 const DEFAULT_MAINS = [
-  { name: "江西精品猪肉炒粉", price: 14, cost: 2.26, qty: 10 },
-  { name: "江西精品牛肉炒粉", price: 16, cost: 2.98, qty: 5  },
+  { name: "江西精品猪肉炒粉", price: 14, cost: 2.42, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 16, cost: 3.14, qty: 5  },
   { name: "江西三鲜泡粉",     price: 10, cost: 1.84, qty: 10 },
   { name: "江西牛肉泡粉",     price: 16, cost: 4.54, qty: 15 },
-  { name: "天津黄汤牛肉拉面", price: 16, cost: 5.24, qty: 15 },
-  { name: "台式牛肉面",       price: 16, cost: 4.18, qty: 5  },
-  { name: "台式卤肉饭",       price: 14, cost: 2.18, qty: 8  },
+  { name: "天津黄汤牛肉拉面", price: 16, cost: 5.35, qty: 15 },
+  { name: "台式牛肉面",       price: 16, cost: 4.29, qty: 5  },
+  { name: "台式卤肉饭",       price: 14, cost: 2.29, qty: 8  },
 ];
 const DEFAULT_DRINKS = [
   { name: "罐装可乐",       price: 2, cost: 0.68, qty: 5 },
@@ -53,9 +55,10 @@ const DEFAULT_EQUIPMENT = [
 
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
 // STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-18).
+// 肉·骨类 now includes 鸡蛋 $208/月 (616 个/周).
 // NOTE: different basis than the order-based COGS above.
 const FOOD_COST_BY_CATEGORY = [
-  { key: "cat.meat",   value: 5388 },
+  { key: "cat.meat",   value: 5596 },
   { key: "cat.staple", value: 1999 },
   { key: "cat.sauce",  value: 843 },
   { key: "cat.spice",  value: 393 },
