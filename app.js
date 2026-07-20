@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v12";
+const STORAGE_KEY = "noodlefan-profit-sim-v13";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu has three dynamic categories, all editable:
