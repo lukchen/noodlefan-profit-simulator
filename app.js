@@ -16,14 +16,16 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v11";
+const STORAGE_KEY = "noodlefan-profit-sim-v12";
 const WEEKS_PER_MONTH = 52 / 12;
 
-// Menu has three dynamic categories: 主菜品 (mains), 饮料 (drinks), 配菜加料 (add-ons).
-// Each item has a name, selling price, food cost, and daily order/unit count.
-// Source of truth: Drive 菜品定价 sheet. 成本 incl. broth bone (2026-07-14).
+// Menu has three dynamic categories, all editable:
+//   主菜品 (mains)            — real delivery orders (drive packaging & order count).
+//   小菜和饮料 (sides+drinks) — standalone à la carte added to an order (attach-only).
+//   加料 (dish-bound add-ons) — modifiers offered when ordering the matching dish (attach-only).
+// Attach-only = contributes revenue + food cost but is NOT a separate order.
+// Source of truth: Drive 菜品定价 sheet.
 // 2026-07-20: 炒粉调料实测 → 猪肉炒粉 2.42→1.76、牛肉炒粉 3.14→2.51 (梅花肉$2.63/牛肩胛$6.05).
-// 2026-07-19: 牛腩份量 拉面/台牛 200→140g、牛肉泡粉 150→140g；面 拉面/台牛 150→160g。
 const DEFAULT_MAINS = [
   { name: "江西精品猪肉炒粉", price: 14, cost: 1.76, qty: 10 },
   { name: "江西精品牛肉炒粉", price: 16, cost: 2.51, qty: 5  },
@@ -33,18 +35,18 @@ const DEFAULT_MAINS = [
   { name: "台式牛肉面",       price: 16, cost: 3.54, qty: 5  },
   { name: "台式卤肉饭",       price: 14, cost: 2.29, qty: 8  },
 ];
+// 小菜和饮料 (Sides & Drinks) — standalone, added to any order (attach-only).
 const DEFAULT_DRINKS = [
-  { name: "罐装可乐",       price: 2, cost: 0.68, qty: 5 },
-  { name: "罐装Diet可乐",   price: 2, cost: 0.68, qty: 5 },
-  { name: "罐装雪碧",       price: 2, cost: 0.68, qty: 3 },
-  { name: "罐装芬达",       price: 2, cost: 0.87, qty: 3 },
+  { name: "煎蛋",         price: 1.5, cost: 0.09, qty: 5 },
+  { name: "茶叶蛋",       price: 1.5, cost: 0.10, qty: 5 },
+  { name: "罐装可乐",     price: 2,   cost: 0.68, qty: 5 },
+  { name: "罐装Diet可乐", price: 2,   cost: 0.68, qty: 5 },
+  { name: "罐装雪碧",     price: 2,   cost: 0.68, qty: 3 },
+  { name: "罐装芬达",     price: 2,   cost: 0.87, qty: 3 },
 ];
-// 配菜加料 (add-ons) — attach to a main order; NOT a separate order.
-// price = direct/base; qty = attach units/day (attach-rate × applicable main orders).
-// 2026-07-20 from 菜品定价 add-on section. 份量=各菜每份用量 (小油菜特例100g).
+// 加料 (dish-bound add-ons) — offered as options when ordering the matching dish (attach-only).
+// price = direct/base; qty = attach units/day. 2026-07-20 from 菜品定价 加料 section.
 const DEFAULT_ADDONS = [
-  { name: "加煎蛋",   price: 1.5, cost: 0.09, qty: 5 },
-  { name: "加茶叶蛋", price: 1.5, cost: 0.10, qty: 5 },
   { name: "加小油菜", price: 2,   cost: 0.19, qty: 4 },
   { name: "加粉",     price: 2.5, cost: 0.50, qty: 3 },
   { name: "加面",     price: 3,   cost: 0.92, qty: 2 },
@@ -102,7 +104,7 @@ function readInputs() {
   v.mains  = readMenu("menuBody");
   v.drinks = readMenu("drinkBody");
   v.addons = readMenu("addonBody");
-  // All items contribute revenue & food cost. Drinks + add-ons are attach-only
+  // All items contribute revenue & food cost. Sides/drinks + add-ons are attach-only
   // (they ride on a main order — they do NOT count as separate orders).
   v.menu   = v.mains.concat(v.drinks, v.addons);
   v.attach = v.drinks.concat(v.addons);
@@ -111,7 +113,7 @@ function readInputs() {
   return v;
 }
 
-// Revenue / COGS / platform prices operate on ALL items (mains + drinks + add-ons).
+// Revenue / COGS / platform prices operate on ALL items (mains + sides/drinks + add-ons).
 function getDishes(v) {
   return v.menu;
 }
@@ -156,6 +158,7 @@ function makeMenuRow(dish) {
 
 function renderMenu(bodyId, list) {
   const body = $(bodyId);
+  if (!body) return;
   body.innerHTML = "";
   list.forEach((dish) => body.appendChild(makeMenuRow(dish)));
 }
@@ -233,12 +236,12 @@ function computePL(v, scaleOverride) {
   const scale = scaleOverride !== undefined ? scaleOverride : 1.0;
   const dishes = getDishes(v);
 
-  // "Orders" = main-dish orders only. Drinks + add-ons attach to those orders.
+  // "Orders" = main-dish orders only. Sides/drinks + add-ons attach to those orders.
   const ordersPerDay   = mainQty(v) * scale;
   const ordersPerMonth = ordersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
   const mainOrdersPerMonth = ordersPerMonth; // packaging basis (main orders)
 
-  // Revenue & COGS include mains + drinks + add-ons.
+  // Revenue & COGS include mains + sides/drinks + add-ons.
   const dailyRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
   const dailyCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
   const revenue = dailyRevenue * scale * v.daysPerWeek * WEEKS_PER_MONTH;
@@ -249,7 +252,7 @@ function computePL(v, scaleOverride) {
   const ueShare     = v.pctUberEats / 100;
   const ghShare     = v.pctGrubhub  / 100;
 
-  // Platforms commission the whole ticket (incl. attached drinks/add-ons).
+  // Platforms commission the whole ticket (incl. attached sides/drinks/add-ons).
   const platformFees =
     revenue * pickupShare * (v.commPickup   / 100) +
     revenue * ddShare     * (v.commDoorDash / 100) +
@@ -465,7 +468,7 @@ function renderSensitivityChart(v) {
   }
 }
 
-// Platform Price Guide — dishes/add-ons are ROWS, platforms are FIXED columns.
+// Platform Price Guide — items are ROWS, platforms are FIXED columns.
 // 堂食/direct column shows the base price; each platform column shows base ÷ (1 − fee).
 function renderPlatformPrices(v) {
   const t = window.NoodleI18N.t;
