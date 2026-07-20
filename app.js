@@ -74,6 +74,10 @@ let foodCostChart = null;
 
 function $(id) { return document.getElementById(id); }
 
+function escHtml(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+}
+
 function captureDefaults() {
   FIELD_IDS.forEach((id) => { DEFAULTS[id] = $(id).value; });
   DEFAULTS.includeStartup = $("includeStartup").checked;
@@ -440,51 +444,49 @@ function renderSensitivityChart(v) {
   }
 }
 
+// Platform Price Guide — dishes are ROWS, platforms are FIXED columns.
+// This keeps the table a constant width as the menu grows (it only gets taller).
+// 堂食/direct column shows the base price (you eat the CC fee); each platform
+// column shows the listed price = base ÷ (1 − fee) so you net the base price.
 function renderPlatformPrices(v) {
   const t = window.NoodleI18N.t;
   const dishes = getDishes(v);
 
-  // Rebuild dish column headers from the current menu
-  const headRow = $("priceGuideHeadRow");
-  headRow.querySelectorAll(".pg-dish-col").forEach((el) => el.remove());
-  dishes.forEach((d) => {
-    const th = document.createElement("th");
-    th.className = "pg-dish-col";
-    th.textContent = d.name;
-    headRow.appendChild(th);
-  });
-
   const channels = [
     { key: "pg.direct",        fee: v.commPickup   / 100, isCCfee: true  },
-    { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false },
-    { key: "channel.ubereats", fee: v.commUberEats / 100, isCCfee: false },
     { key: "channel.grubhub",  fee: v.commGrubhub  / 100, isCCfee: false },
+    { key: "channel.ubereats", fee: v.commUberEats / 100, isCCfee: false },
+    { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false },
   ];
 
-  const tbody = $("priceGuideBody");
-  tbody.innerHTML = "";
-
-  channels.forEach(ch => {
-    const tr = document.createElement("tr");
-    const fmtFee = ch.isCCfee
+  // Header: 菜品 + one column per platform (name + fee %).
+  const headCells = [`<th class="pg-dish-head">${escHtml(t("sm.col.dish"))}</th>`];
+  channels.forEach((ch) => {
+    const feeLabel = ch.isCCfee
       ? (ch.fee * 100).toFixed(1) + "% CC"
       : (ch.fee * 100).toFixed(0) + "%";
-    // For direct (CC fee only), listed price = base price; you net = base*(1-ccfee)
-    // For platforms, listed price = base/(1-fee) so you net = base
-    const cells = [
-      `<td class="pg-channel">${t(ch.key).split("(")[0].trim()}</td>`,
-      `<td class="pg-fee">${fmtFee}</td>`,
-    ];
-    dishes.forEach(d => {
+    headCells.push(
+      `<th class="pg-plat-head">${escHtml(t(ch.key).split("(")[0].trim())}` +
+      `<span class="pg-fee-sub">${feeLabel}</span></th>`
+    );
+  });
+  $("priceGuideHead").innerHTML = `<tr>${headCells.join("")}</tr>`;
+
+  // Body: one row per dish, one price cell per platform.
+  const tbody = $("priceGuideBody");
+  tbody.innerHTML = "";
+  dishes.forEach((d) => {
+    const cells = [`<td class="pg-dish-name">${escHtml(d.name) || "—"}</td>`];
+    channels.forEach((ch) => {
       if (d.price <= 0) {
         cells.push(`<td>—</td>`);
       } else if (ch.isCCfee) {
         cells.push(`<td>$${d.price.toFixed(2)}</td>`);
       } else {
-        const listed = d.price / (1 - ch.fee);
-        cells.push(`<td>$${listed.toFixed(2)}</td>`);
+        cells.push(`<td>$${(d.price / (1 - ch.fee)).toFixed(2)}</td>`);
       }
     });
+    const tr = document.createElement("tr");
     tr.innerHTML = cells.join("");
     tbody.appendChild(tr);
   });
