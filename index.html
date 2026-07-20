@@ -98,6 +98,32 @@
           <button type="button" id="addDrinkBtn" class="add-item-btn" data-i18n="dr.addDrink">+ Add drink</button>
         </div>
         <div class="card">
+          <h2 data-i18n="am.title">Add-ons</h2>
+          <p class="hint" data-i18n="am.hint"></p>
+          <div class="menu-table-wrap"><table class="menu-table">
+            <thead>
+              <tr>
+                <th data-i18n="sm.col.dish">Dish</th>
+                <th data-i18n="sm.col.price">Price ($)</th>
+                <th data-i18n="sm.col.cost">Cost ($)</th>
+                <th data-i18n="sm.col.qty">Units/Day</th>
+                <th class="menu-remove-col"></th>
+              </tr>
+            </thead>
+            <tbody id="addonBody"></tbody>
+            <tfoot>
+              <tr class="menu-totals-row">
+                <td data-i18n="sm.blended">Blended</td>
+                <td><span data-i18n="sm.aovLabel">AOV:</span> <strong id="addon-aov">—</strong></td>
+                <td><span data-i18n="sm.cogsLabel">Food cost:</span> <strong id="addon-cogs-pct">—</strong></td>
+                <td><strong id="addon-total-qty">0</strong> <span data-i18n="sm.perDay">/day</span></td>
+                <td class="menu-remove-col"></td>
+              </tr>
+            </tfoot>
+          </table></div>
+          <button type="button" id="addAddonBtn" class="add-item-btn" data-i18n="am.addAddon">+ Add add-on</button>
+        </div>
+        <div class="card">
           <h2 data-i18n="pg.title">Platform Price Guide</h2>
           <p class="hint" data-i18n="pg.hint"></p>
           <div class="price-guide-wrap">
@@ -317,7 +343,7 @@
   </footer>
 
   <script src="chart.umd.min.js?v=3"></script>
-  <script src="i18n.js?v=18"></script>
-  <script src="app.js?v=33"></script>
+  <script src="i18n.js?v=19"></script>
+  <script src="app.js?v=34"></script>
 </body>
 </html>
