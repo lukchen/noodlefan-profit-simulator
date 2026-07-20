@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v13";
+const STORAGE_KEY = "noodlefan-profit-sim-v14";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // Menu has three dynamic categories, all editable:
@@ -25,10 +25,10 @@ const WEEKS_PER_MONTH = 52 / 12;
 //   加料 (dish-bound add-ons) — modifiers offered when ordering the matching dish (attach-only).
 // Attach-only = contributes revenue + food cost but is NOT a separate order.
 // Source of truth: Drive 菜品定价 sheet.
-// 2026-07-20: 炒粉调料实测 → 猪肉炒粉 2.42→1.76、牛肉炒粉 3.14→2.51 (梅花肉$2.63/牛肩胛$6.05).
+// 2026-07-20: 炒粉调料实测 → 1.76/2.51；含小米辣2g@$5/lb(估价)后 → 猪肉炒粉1.78、牛肉炒粉2.54 (梅花肉$2.63/牛肩胛$6.05).
 const DEFAULT_MAINS = [
-  { name: "江西精品猪肉炒粉", price: 14, cost: 1.76, qty: 10 },
-  { name: "江西精品牛肉炒粉", price: 16, cost: 2.51, qty: 5  },
+  { name: "江西精品猪肉炒粉", price: 14, cost: 1.78, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 16, cost: 2.54, qty: 5  },
   { name: "江西三鲜泡粉",     price: 10, cost: 1.36, qty: 10 },
   { name: "江西牛肉泡粉",     price: 16, cost: 3.92, qty: 15 },
   { name: "天津黄汤牛肉拉面", price: 16, cost: 4.60, qty: 15 },
@@ -70,16 +70,16 @@ const DEFAULT_EQUIPMENT = [
 ];
 
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
-// STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-19).
+// STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-20: +6 估价项 小米辣/大葱/蒜苗/腌萝卜/山楂/白芷).
 // NOTE: different basis than the order-based COGS above.
 const FOOD_COST_BY_CATEGORY = [
   { key: "cat.meat",   value: 4894 },
   { key: "cat.staple", value: 1543 },
   { key: "cat.sauce",  value: 843 },
-  { key: "cat.spice",  value: 244 },
+  { key: "cat.spice",  value: 254 },
   { key: "cat.drink",  value: 330 },
-  { key: "cat.veg",    value: 321 },
-  { key: "cat.dry",    value: 243 },
+  { key: "cat.veg",    value: 448 },
+  { key: "cat.dry",    value: 259 },
 ];
 
 let breakdownChart = null;
