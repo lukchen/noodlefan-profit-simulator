@@ -16,20 +16,17 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v10";
+const STORAGE_KEY = "noodlefan-profit-sim-v11";
 const WEEKS_PER_MONTH = 52 / 12;
 
-// Menu is split into two dynamic categories: 主菜品 (mains) and 饮料 (drinks).
-// Each dish has a name, selling price, food cost, and daily order count.
-// Source of truth: Drive 菜品定价 sheet. 成本 incl. broth bone (2026-07-14);
-// 2026-07-19: 炒粉+泡粉 全用联发普通米粉 $1.81/lb（弃海运麻姑$3.63）。Sync manually.
-// 2026-07-18: 炒粉 portion revised — 干米粉 130g, 肉丝 100g, 蔬菜合计 150g.
-// 2026-07-18: 成本计入鸡蛋（联发 $0.0778/个）— 炒粉 2 个 $0.16；拉面/台牛/卤肉饭
-// 各 1 个默认蛋，茶叶蛋/煎蛋混合均摊 $0.11。泡粉不含蛋。
+// Menu has three dynamic categories: 主菜品 (mains), 饮料 (drinks), 配菜加料 (add-ons).
+// Each item has a name, selling price, food cost, and daily order/unit count.
+// Source of truth: Drive 菜品定价 sheet. 成本 incl. broth bone (2026-07-14).
+// 2026-07-20: 炒粉调料实测 → 猪肉炒粉 2.42→1.76、牛肉炒粉 3.14→2.51 (梅花肉$2.63/牛肩胛$6.05).
 // 2026-07-19: 牛腩份量 拉面/台牛 200→140g、牛肉泡粉 150→140g；面 拉面/台牛 150→160g。
 const DEFAULT_MAINS = [
-  { name: "江西精品猪肉炒粉", price: 14, cost: 2.42, qty: 10 },
-  { name: "江西精品牛肉炒粉", price: 16, cost: 3.14, qty: 5  },
+  { name: "江西精品猪肉炒粉", price: 14, cost: 1.76, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 16, cost: 2.51, qty: 5  },
   { name: "江西三鲜泡粉",     price: 10, cost: 1.36, qty: 10 },
   { name: "江西牛肉泡粉",     price: 16, cost: 3.92, qty: 15 },
   { name: "天津黄汤牛肉拉面", price: 16, cost: 4.60, qty: 15 },
@@ -41,6 +38,22 @@ const DEFAULT_DRINKS = [
   { name: "罐装Diet可乐",   price: 2, cost: 0.68, qty: 5 },
   { name: "罐装雪碧",       price: 2, cost: 0.68, qty: 3 },
   { name: "罐装芬达",       price: 2, cost: 0.87, qty: 3 },
+];
+// 配菜加料 (add-ons) — attach to a main order; NOT a separate order.
+// price = direct/base; qty = attach units/day (attach-rate × applicable main orders).
+// 2026-07-20 from 菜品定价 add-on section. 份量=各菜每份用量 (小油菜特例100g).
+const DEFAULT_ADDONS = [
+  { name: "加煎蛋",   price: 1.5, cost: 0.09, qty: 5 },
+  { name: "加茶叶蛋", price: 1.5, cost: 0.10, qty: 5 },
+  { name: "加小油菜", price: 2,   cost: 0.19, qty: 4 },
+  { name: "加粉",     price: 2.5, cost: 0.50, qty: 3 },
+  { name: "加面",     price: 3,   cost: 0.92, qty: 2 },
+  { name: "加饭",     price: 2,   cost: 0.10, qty: 1 },
+  { name: "加三鲜",   price: 2.5, cost: 0.14, qty: 1 },
+  { name: "加猪肉丝", price: 3.5, cost: 0.58, qty: 1 },
+  { name: "加牛肉丝", price: 5,   cost: 1.33, qty: 1 },
+  { name: "加牛腩",   price: 6,   cost: 1.87, qty: 4 },
+  { name: "加卤肉",   price: 5,   cost: 1.80, qty: 1 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
@@ -56,7 +69,6 @@ const DEFAULT_EQUIPMENT = [
 
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
 // STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-19).
-// 2026-07-19: 牛腩份量减→肉·骨类降；泡粉炒粉合并联发→主食面米降；蔬果含胡萝卜/蒜改RD。
 // NOTE: different basis than the order-based COGS above.
 const FOOD_COST_BY_CATEGORY = [
   { key: "cat.meat",   value: 4894 },
@@ -89,21 +101,31 @@ function readInputs() {
   v.includeStartup = $("includeStartup").checked;
   v.mains  = readMenu("menuBody");
   v.drinks = readMenu("drinkBody");
-  v.menu   = v.mains.concat(v.drinks);
+  v.addons = readMenu("addonBody");
+  // All items contribute revenue & food cost. Drinks + add-ons are attach-only
+  // (they ride on a main order — they do NOT count as separate orders).
+  v.menu   = v.mains.concat(v.drinks, v.addons);
+  v.attach = v.drinks.concat(v.addons);
   v.equipment = readEquipment();
   v.equipmentCost = equipmentTotal(v.equipment);
   return v;
 }
 
-// P&L, break-even, sensitivity, and platform prices operate on ALL items (mains + drinks).
+// Revenue / COGS / platform prices operate on ALL items (mains + drinks + add-ons).
 function getDishes(v) {
   return v.menu;
 }
+// Order COUNT (packaging, order metric, break-even) = main dishes only.
+function mainQty(v) {
+  return v.mains.reduce((s, d) => s + d.qty, 0);
+}
 
-// ── Menu lists (mains + drinks share the same row shape) ──
+// ── Menu lists (mains + drinks + add-ons share the same row shape) ──
 function readMenu(bodyId) {
   const list = [];
-  document.querySelectorAll("#" + bodyId + " .menu-row").forEach((row) => {
+  const body = $(bodyId);
+  if (!body) return list;
+  body.querySelectorAll(".menu-row").forEach((row) => {
     list.push({
       name:  row.querySelector(".dish-name").value,
       price: parseFloat(row.querySelector(".dish-price").value) || 0,
@@ -206,16 +228,17 @@ function fmtPct(n) {
   return n.toFixed(1) + "%";
 }
 
-// scaleOverride multiplies all dish quantities (used for sensitivity curve).
+// scaleOverride multiplies all quantities (used for sensitivity curve).
 function computePL(v, scaleOverride) {
   const scale = scaleOverride !== undefined ? scaleOverride : 1.0;
   const dishes = getDishes(v);
 
-  const ordersPerDay = dishes.reduce((s, d) => s + d.qty, 0) * scale;
+  // "Orders" = main-dish orders only. Drinks + add-ons attach to those orders.
+  const ordersPerDay   = mainQty(v) * scale;
   const ordersPerMonth = ordersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
-  // Packaging applies to main-dish orders only — drinks are canned and use no separate packaging.
-  const mainOrdersPerDay   = v.mains.reduce((s, d) => s + d.qty, 0) * scale;
-  const mainOrdersPerMonth = mainOrdersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
+  const mainOrdersPerMonth = ordersPerMonth; // packaging basis (main orders)
+
+  // Revenue & COGS include mains + drinks + add-ons.
   const dailyRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
   const dailyCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
   const revenue = dailyRevenue * scale * v.daysPerWeek * WEEKS_PER_MONTH;
@@ -226,6 +249,7 @@ function computePL(v, scaleOverride) {
   const ueShare     = v.pctUberEats / 100;
   const ghShare     = v.pctGrubhub  / 100;
 
+  // Platforms commission the whole ticket (incl. attached drinks/add-ons).
   const platformFees =
     revenue * pickupShare * (v.commPickup   / 100) +
     revenue * ddShare     * (v.commDoorDash / 100) +
@@ -260,13 +284,12 @@ function computePL(v, scaleOverride) {
   };
 }
 
-// Break-even: find the scale factor k at which profit = 0, return break-even orders/day.
+// Break-even: scale factor k where profit = 0 → break-even MAIN orders/day.
 function computeBreakEven(v) {
-  const dishes       = getDishes(v);
-  const ordersPerDay = dishes.reduce((s, d) => s + d.qty, 0);
-  const mainOrdersPerDay = v.mains.reduce((s, d) => s + d.qty, 0);
-  const dailyRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
-  const dailyCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
+  const dishes           = getDishes(v);
+  const mainOrdersPerDay = mainQty(v);
+  const dailyRevenue     = dishes.reduce((s, d) => s + d.qty * d.price, 0);
+  const dailyCogs        = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
 
   const blendedFeePct =
     (v.pctPickup   / 100) * (v.commPickup   / 100) +
@@ -284,7 +307,7 @@ function computeBreakEven(v) {
   const fixedCosts   = v.rent + v.utilities + labor + v.marketingMonthly + v.orderProcessingFee + startupInPL;
 
   if (contributionPerScale <= 0) return Infinity;
-  return ordersPerDay * (fixedCosts / contributionPerScale);
+  return mainOrdersPerDay * (fixedCosts / contributionPerScale);
 }
 
 function updateMixWarning(v) {
@@ -293,7 +316,7 @@ function updateMixWarning(v) {
   $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? window.NoodleI18N.t("mix.warning") : "";
 }
 
-// Blended stats are computed per category so drinks don't skew the mains' AOV / food-cost %.
+// Blended stats per category so categories don't skew each other's AOV / food-cost %.
 function renderCategoryTotals(dishes, qtyId, aovId, cogsId) {
   const totalQty     = dishes.reduce((s, d) => s + d.qty,           0);
   const totalRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
@@ -301,14 +324,15 @@ function renderCategoryTotals(dishes, qtyId, aovId, cogsId) {
   const aov          = totalQty    > 0 ? totalRevenue / totalQty     : 0;
   const cogsPct      = totalRevenue > 0 ? (totalCogs / totalRevenue) * 100 : 0;
 
-  $(qtyId).textContent  = totalQty;
-  $(aovId).textContent  = "$" + aov.toFixed(2);
-  $(cogsId).textContent = cogsPct.toFixed(1) + "%";
+  if ($(qtyId))  $(qtyId).textContent  = totalQty;
+  if ($(aovId))  $(aovId).textContent  = "$" + aov.toFixed(2);
+  if ($(cogsId)) $(cogsId).textContent = cogsPct.toFixed(1) + "%";
 }
 
 function renderMenuTotals(v) {
   renderCategoryTotals(v.mains,  "menu-total-qty",  "menu-aov",  "menu-cogs-pct");
   renderCategoryTotals(v.drinks, "drink-total-qty", "drink-aov", "drink-cogs-pct");
+  renderCategoryTotals(v.addons, "addon-total-qty", "addon-aov", "addon-cogs-pct");
 }
 
 function renderResults(pl, breakEvenDay) {
@@ -331,7 +355,6 @@ function renderResults(pl, breakEvenDay) {
   $("out-sep").textContent         = "-" + fmtUSD(pl.sepDeduction);
   $("out-sec179").textContent      = "-" + fmtUSD(pl.sec179Monthly);
   $("out-taxable").textContent     = fmtUSD(pl.taxableIncome);
-  // Annotate tax row label with rate and calculation
   const taxLabelEl = $("out-tax").previousElementSibling;
   if (taxLabelEl) {
     const taxRate = parseFloat($("taxRate").value) || 0;
@@ -375,7 +398,6 @@ function renderBreakdownChart(pl) {
   }
 }
 
-// Static food-cost split by 采购清单 category (procurement basis).
 function renderFoodCostChart() {
   const ctx = $("foodCostChart");
   if (!ctx) return;
@@ -406,8 +428,7 @@ function renderFoodCostChart() {
 function renderSensitivityChart(v) {
   const ctx = $("sensitivityChart");
   const t = window.NoodleI18N.t;
-  const dishes     = getDishes(v);
-  const baseOrders = dishes.reduce((s, d) => s + d.qty, 0) || 1;
+  const baseOrders = mainQty(v) || 1;
   const points = [];
   const labels = [];
   for (let m = 0.4; m <= 1.6; m += 0.2) {
@@ -444,10 +465,8 @@ function renderSensitivityChart(v) {
   }
 }
 
-// Platform Price Guide — dishes are ROWS, platforms are FIXED columns.
-// This keeps the table a constant width as the menu grows (it only gets taller).
-// 堂食/direct column shows the base price (you eat the CC fee); each platform
-// column shows the listed price = base ÷ (1 − fee) so you net the base price.
+// Platform Price Guide — dishes/add-ons are ROWS, platforms are FIXED columns.
+// 堂食/direct column shows the base price; each platform column shows base ÷ (1 − fee).
 function renderPlatformPrices(v) {
   const t = window.NoodleI18N.t;
   const dishes = getDishes(v);
@@ -459,7 +478,6 @@ function renderPlatformPrices(v) {
     { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false },
   ];
 
-  // Header: 菜品 + one column per platform (name + fee %).
   const headCells = [`<th class="pg-dish-head">${escHtml(t("sm.col.dish"))}</th>`];
   channels.forEach((ch) => {
     const feeLabel = ch.isCCfee
@@ -472,7 +490,6 @@ function renderPlatformPrices(v) {
   });
   $("priceGuideHead").innerHTML = `<tr>${headCells.join("")}</tr>`;
 
-  // Body: one row per dish, one price cell per platform.
   const tbody = $("priceGuideBody");
   tbody.innerHTML = "";
   dishes.forEach((d) => {
@@ -514,6 +531,7 @@ function init() {
   const saved = loadFromStorage();
   renderMenu("menuBody",  saved && Array.isArray(saved.mains)  ? saved.mains  : DEFAULT_MAINS);
   renderMenu("drinkBody", saved && Array.isArray(saved.drinks) ? saved.drinks : DEFAULT_DRINKS);
+  renderMenu("addonBody", saved && Array.isArray(saved.addons) ? saved.addons : DEFAULT_ADDONS);
   renderEquipment(saved && Array.isArray(saved.equipment) ? saved.equipment : DEFAULT_EQUIPMENT);
   if (saved) applyValues(saved);
 
@@ -530,6 +548,12 @@ function init() {
     recalc();
   });
 
+  const addAddonBtn = $("addAddonBtn");
+  if (addAddonBtn) addAddonBtn.addEventListener("click", () => {
+    $("addonBody").appendChild(makeMenuRow({ name: "", price: 0, cost: 0, qty: 0 }));
+    recalc();
+  });
+
   $("addEquipmentBtn").addEventListener("click", () => {
     $("equipmentList").appendChild(makeEquipmentRow({ name: "", price: 0, qty: 1 }));
     recalc();
@@ -539,6 +563,7 @@ function init() {
     applyValues(DEFAULTS);
     renderMenu("menuBody",  DEFAULT_MAINS);
     renderMenu("drinkBody", DEFAULT_DRINKS);
+    renderMenu("addonBody", DEFAULT_ADDONS);
     renderEquipment(DEFAULT_EQUIPMENT);
     $("includeStartup").checked = true;
     recalc();
