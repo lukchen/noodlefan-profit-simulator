@@ -16,44 +16,42 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v16";
+const STORAGE_KEY = "noodlefan-profit-sim-v17";
 const WEEKS_PER_MONTH = 52 / 12;
 
-// 阶梯式平台定价 (2026-07-20 Eli): 平台单不把手续费全转嫁给客人，而是按渠道分级加价。
-// 每道菜带一个平台加价向量 mk = {g:饭团, u:uber, d:doordash}（相对直营价的加价，$）。
-//   直营(pickup)=price；饭团=price+mk.g；uber=price+mk.u；doordash=price+mk.d。
-// 主菜 mk={1,2,3}；小菜/饮料 mk={0,0,0}；加料多为 +0.5 或 0。
-// P&L 按渠道占比加权：平台单收阶梯价、再扣平台手续费 → 真实反映部分转嫁后的净收入。
-// Source of truth: Drive 菜品定价 sheet.
-const MK0 = { g: 0, u: 0, d: 0 };
+// 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带 4 个可编辑价格 —
+//   price = 直营(pickup/自取)，pG = 饭团，pU = Uber，pD = DoorDash。
+// 平台单不把手续费全额转嫁给客人；各平台价在菜单表里直接编辑（不再有独立的定价参考表）。
+// P&L 按渠道占比加权：平台单收各自平台价、再扣该渠道手续费 → 真实反映部分转嫁后的净收入。
+// Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/成本/每日订单).
 const DEFAULT_MAINS = [
-  { name: "江西精品猪肉炒粉", price: 14.99, mk: { g: 1, u: 2, d: 3 }, cost: 1.82, qty: 10 },
-  { name: "江西精品牛肉炒粉", price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 2.58, qty: 5  },
-  { name: "江西三鲜泡粉",     price: 9.99,  mk: { g: 1, u: 2, d: 3 }, cost: 1.36, qty: 10 },
-  { name: "江西牛肉泡粉",     price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 3.92, qty: 15 },
-  { name: "天津黄汤牛肉拉面", price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 4.60, qty: 15 },
-  { name: "台式牛肉面",       price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 3.54, qty: 5  },
-  { name: "台式卤肉饭",       price: 14.99, mk: { g: 1, u: 2, d: 3 }, cost: 2.29, qty: 8  },
+  { name: "江西精品猪肉炒粉", price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, cost: 1.82, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 2.58, qty: 5  },
+  { name: "江西三鲜泡粉",     price: 9.99,  pG: 10.99, pU: 11.99, pD: 12.99, cost: 1.36, qty: 10 },
+  { name: "江西牛肉泡粉",     price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 3.92, qty: 15 },
+  { name: "天津黄汤牛肉拉面", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 4.60, qty: 15 },
+  { name: "台式牛肉面",       price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 3.54, qty: 5  },
+  { name: "台式卤肉饭",       price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, cost: 2.29, qty: 8  },
 ];
-// 小菜和饮料 (Sides & Drinks) — standalone, attach-only. 平价，无平台加价 (mk=0).
+// 小菜和饮料 — attach-only。平价（各平台同价）。
 const DEFAULT_DRINKS = [
-  { name: "葱油煎蛋",     price: 2.5, mk: MK0, cost: 0.09, qty: 5 },
-  { name: "茶叶蛋",       price: 2,   mk: MK0, cost: 0.10, qty: 5 },
-  { name: "罐装可乐",     price: 2.5, mk: MK0, cost: 0.68, qty: 5 },
-  { name: "罐装Diet可乐", price: 2.5, mk: MK0, cost: 0.68, qty: 5 },
-  { name: "罐装雪碧",     price: 2.5, mk: MK0, cost: 0.68, qty: 3 },
-  { name: "罐装芬达",     price: 2.5, mk: MK0, cost: 0.87, qty: 3 },
+  { name: "葱油煎蛋",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.09, qty: 5 },
+  { name: "茶叶蛋",       price: 2,   pG: 2,   pU: 2,   pD: 2,   cost: 0.10, qty: 5 },
+  { name: "罐装可乐",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.68, qty: 5 },
+  { name: "罐装Diet可乐", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.68, qty: 5 },
+  { name: "罐装雪碧",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.68, qty: 3 },
+  { name: "罐装芬达",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.87, qty: 3 },
 ];
-// 加料 (dish-bound add-ons) — attach-only. 中价加料 +$0.5，贵价加料平价。(加小油菜 2026-07-20 删)
+// 加料 — attach-only。中价加料平台 +$0.5，贵价加料平价。(加小油菜 2026-07-20 删)
 const DEFAULT_ADDONS = [
-  { name: "加粉",     price: 2,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.50, qty: 3 },
-  { name: "加面",     price: 3,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.92, qty: 2 },
-  { name: "加饭",     price: 2,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.10, qty: 1 },
-  { name: "加三鲜",   price: 2,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.14, qty: 1 },
-  { name: "加猪肉丝", price: 3,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.58, qty: 1 },
-  { name: "加牛肉丝", price: 4.9, mk: MK0, cost: 1.33, qty: 1 },
-  { name: "加牛腩",   price: 4.9, mk: MK0, cost: 1.87, qty: 4 },
-  { name: "加卤肉",   price: 4.9, mk: MK0, cost: 1.80, qty: 1 },
+  { name: "加粉",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.50, qty: 3 },
+  { name: "加面",     price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, cost: 0.92, qty: 2 },
+  { name: "加饭",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.10, qty: 1 },
+  { name: "加三鲜",   price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.14, qty: 1 },
+  { name: "加猪肉丝", price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, cost: 0.58, qty: 1 },
+  { name: "加牛肉丝", price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, cost: 1.33, qty: 1 },
+  { name: "加牛腩",   price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, cost: 1.87, qty: 4 },
+  { name: "加卤肉",   price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, cost: 1.80, qty: 1 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
@@ -69,7 +67,6 @@ const DEFAULT_EQUIPMENT = [
 
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
 // STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别.
-// NOTE: different basis than the order-based COGS above.
 const FOOD_COST_BY_CATEGORY = [
   { key: "cat.meat",   value: 4894 },
   { key: "cat.staple", value: 1568 },
@@ -111,7 +108,7 @@ function readInputs() {
   return v;
 }
 
-// Revenue / COGS / platform prices operate on ALL items (mains + sides/drinks + add-ons).
+// Revenue / COGS operate on ALL items (mains + sides/drinks + add-ons).
 function getDishes(v) {
   return v.menu;
 }
@@ -120,24 +117,15 @@ function mainQty(v) {
   return v.mains.reduce((s, d) => s + d.qty, 0);
 }
 
-// Per-channel price for a dish: pickup=price; platforms=price+markup.
-function channelPrice(d, chMk) {
-  const mk = d.mk || MK0;
-  return d.price + (chMk ? (mk[chMk] || 0) : 0);
-}
-
-// Daily revenue / platform fees / cogs, channel-weighted with 阶梯 markups.
-// 平台单按阶梯价收钱，手续费按各渠道费率算在(更高的)阶梯价上。
+// Daily revenue / platform fees / cogs, channel-weighted with each dish's per-platform prices.
+// 平台单按各自平台价收钱，手续费按各渠道费率算在该平台价上。
 function dailyTotals(v) {
   const dishes = getDishes(v);
   const sP = v.pctPickup   / 100, sG = v.pctGrubhub  / 100, sU = v.pctUberEats / 100, sD = v.pctDoorDash / 100;
   const fP = v.commPickup  / 100, fG = v.commGrubhub / 100, fU = v.commUberEats / 100, fD = v.commDoorDash / 100;
   let revenue = 0, fees = 0, cogs = 0;
   dishes.forEach((d) => {
-    const pP = channelPrice(d, null);
-    const pG = channelPrice(d, "g");
-    const pU = channelPrice(d, "u");
-    const pD = channelPrice(d, "d");
+    const pP = d.price, pG = d.pG, pU = d.pU, pD = d.pD;
     const eff    = sP * pP        + sG * pG        + sU * pU        + sD * pD;
     const effFee = sP * pP * fP   + sG * pG * fG   + sU * pU * fU   + sD * pD * fD;
     revenue += d.qty * eff;
@@ -153,15 +141,15 @@ function readMenu(bodyId) {
   const body = $(bodyId);
   if (!body) return list;
   body.querySelectorAll(".menu-row").forEach((row) => {
-    let mk;
-    try { mk = JSON.parse(row.getAttribute("data-mk")) || { g: 0, u: 0, d: 0 }; }
-    catch (e) { mk = { g: 0, u: 0, d: 0 }; }
+    const num = (sel) => parseFloat(row.querySelector(sel).value) || 0;
     list.push({
       name:  row.querySelector(".dish-name").value,
-      price: parseFloat(row.querySelector(".dish-price").value) || 0,
-      cost:  parseFloat(row.querySelector(".dish-cost").value)  || 0,
-      qty:   parseFloat(row.querySelector(".dish-qty").value)   || 0,
-      mk:    mk,
+      price: num(".dish-price"),
+      pG:    num(".dish-pg"),
+      pU:    num(".dish-pu"),
+      pD:    num(".dish-pd"),
+      cost:  num(".dish-cost"),
+      qty:   num(".dish-qty"),
     });
   });
   return list;
@@ -170,15 +158,20 @@ function readMenu(bodyId) {
 function makeMenuRow(dish) {
   const row = document.createElement("tr");
   row.className = "menu-row";
-  row.setAttribute("data-mk", JSON.stringify(dish.mk || { g: 0, u: 0, d: 0 }));
   row.innerHTML =
     `<td><input class="dish-name" type="text" value="" /></td>` +
     `<td><input class="dish-price" type="number" min="0" step="0.5" value="0" /></td>` +
+    `<td><input class="dish-pg" type="number" min="0" step="0.5" value="0" /></td>` +
+    `<td><input class="dish-pu" type="number" min="0" step="0.5" value="0" /></td>` +
+    `<td><input class="dish-pd" type="number" min="0" step="0.5" value="0" /></td>` +
     `<td><input class="dish-cost" type="number" min="0" step="0.5" value="0" /></td>` +
     `<td><input class="dish-qty" type="number" min="0" step="1" value="0" /></td>` +
     `<td class="menu-remove-cell"><button type="button" class="dish-remove" aria-label="remove">×</button></td>`;
   row.querySelector(".dish-name").value  = dish.name;
   row.querySelector(".dish-price").value = dish.price;
+  row.querySelector(".dish-pg").value    = dish.pG !== undefined ? dish.pG : dish.price;
+  row.querySelector(".dish-pu").value    = dish.pU !== undefined ? dish.pU : dish.price;
+  row.querySelector(".dish-pd").value    = dish.pD !== undefined ? dish.pD : dish.price;
   row.querySelector(".dish-cost").value  = dish.cost;
   row.querySelector(".dish-qty").value   = dish.qty;
   row.querySelectorAll("input").forEach((inp) => inp.addEventListener("input", recalc));
@@ -270,7 +263,7 @@ function computePL(v, scaleOverride) {
   const ordersPerMonth = ordersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
   const mainOrdersPerMonth = ordersPerMonth; // packaging basis (main orders)
 
-  // Channel-weighted daily revenue / platform fees / cogs (阶梯定价).
+  // Channel-weighted daily revenue / platform fees / cogs (per-platform pricing).
   const dt = dailyTotals(v);
   const revenue      = dt.revenue * scale * v.daysPerWeek * WEEKS_PER_MONTH;
   const cogs         = dt.cogs    * scale * v.daysPerWeek * WEEKS_PER_MONTH;
@@ -328,7 +321,7 @@ function updateMixWarning(v) {
   $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? window.NoodleI18N.t("mix.warning") : "";
 }
 
-// Blended stats per category (base/直营 price basis).
+// Blended stats per category (direct/pickup price basis).
 function renderCategoryTotals(dishes, qtyId, aovId, cogsId) {
   const totalQty     = dishes.reduce((s, d) => s + d.qty,           0);
   const totalRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
@@ -477,48 +470,6 @@ function renderSensitivityChart(v) {
   }
 }
 
-// Platform Price Guide — items are ROWS, platforms are FIXED columns.
-// 阶梯式：堂食=直营价；每个平台=直营价 + 该菜的平台加价 mk（不是全额转嫁手续费）。
-function renderPlatformPrices(v) {
-  const t = window.NoodleI18N.t;
-  const dishes = getDishes(v);
-
-  const channels = [
-    { key: "pg.direct",        fee: v.commPickup   / 100, isCCfee: true,  mk: null },
-    { key: "channel.grubhub",  fee: v.commGrubhub  / 100, isCCfee: false, mk: "g" },
-    { key: "channel.ubereats", fee: v.commUberEats / 100, isCCfee: false, mk: "u" },
-    { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false, mk: "d" },
-  ];
-
-  const headCells = [`<th class="pg-dish-head">${escHtml(t("sm.col.dish"))}</th>`];
-  channels.forEach((ch) => {
-    const feeLabel = ch.isCCfee
-      ? (ch.fee * 100).toFixed(1) + "% CC"
-      : (ch.fee * 100).toFixed(0) + "%";
-    headCells.push(
-      `<th class="pg-plat-head">${escHtml(t(ch.key).split("(")[0].trim())}` +
-      `<span class="pg-fee-sub">${feeLabel}</span></th>`
-    );
-  });
-  $("priceGuideHead").innerHTML = `<tr>${headCells.join("")}</tr>`;
-
-  const tbody = $("priceGuideBody");
-  tbody.innerHTML = "";
-  dishes.forEach((d) => {
-    const cells = [`<td class="pg-dish-name">${escHtml(d.name) || "—"}</td>`];
-    channels.forEach((ch) => {
-      if (d.price <= 0) {
-        cells.push(`<td>—</td>`);
-      } else {
-        cells.push(`<td>$${channelPrice(d, ch.mk).toFixed(2)}</td>`);
-      }
-    });
-    const tr = document.createElement("tr");
-    tr.innerHTML = cells.join("");
-    tbody.appendChild(tr);
-  });
-}
-
 function recalc() {
   const v = readInputs();
   $("equipmentTotal").textContent = fmtUSD(v.equipmentCost);
@@ -530,7 +481,6 @@ function recalc() {
   renderBreakdownChart(pl);
   renderFoodCostChart();
   renderSensitivityChart(v);
-  renderPlatformPrices(v);
   saveToStorage(v);
 }
 
@@ -549,18 +499,18 @@ function init() {
   $("includeStartup").addEventListener("change", recalc);
 
   $("addDishBtn").addEventListener("click", () => {
-    $("menuBody").appendChild(makeMenuRow({ name: "", price: 0, cost: 0, qty: 0 }));
+    $("menuBody").appendChild(makeMenuRow({ name: "", price: 0, pG: 0, pU: 0, pD: 0, cost: 0, qty: 0 }));
     recalc();
   });
 
   $("addDrinkBtn").addEventListener("click", () => {
-    $("drinkBody").appendChild(makeMenuRow({ name: "", price: 0, cost: 0, qty: 0 }));
+    $("drinkBody").appendChild(makeMenuRow({ name: "", price: 0, pG: 0, pU: 0, pD: 0, cost: 0, qty: 0 }));
     recalc();
   });
 
   const addAddonBtn = $("addAddonBtn");
   if (addAddonBtn) addAddonBtn.addEventListener("click", () => {
-    $("addonBody").appendChild(makeMenuRow({ name: "", price: 0, cost: 0, qty: 0 }));
+    $("addonBody").appendChild(makeMenuRow({ name: "", price: 0, pG: 0, pU: 0, pD: 0, cost: 0, qty: 0 }));
     recalc();
   });
 
