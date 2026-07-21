@@ -16,46 +16,44 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v15";
+const STORAGE_KEY = "noodlefan-profit-sim-v16";
 const WEEKS_PER_MONTH = 52 / 12;
 
-// Menu has three dynamic categories, all editable:
-//   主菜品 (mains)            — real delivery orders (drive packaging & order count).
-//   小菜和饮料 (sides+drinks) — standalone à la carte added to an order (attach-only).
-//   加料 (dish-bound add-ons) — modifiers offered when ordering the matching dish (attach-only).
-// Attach-only = contributes revenue + food cost but is NOT a separate order.
+// 阶梯式平台定价 (2026-07-20 Eli): 平台单不把手续费全转嫁给客人，而是按渠道分级加价。
+// 每道菜带一个平台加价向量 mk = {g:饭团, u:uber, d:doordash}（相对直营价的加价，$）。
+//   直营(pickup)=price；饭团=price+mk.g；uber=price+mk.u；doordash=price+mk.d。
+// 主菜 mk={1,2,3}；小菜/饮料 mk={0,0,0}；加料多为 +0.5 或 0。
+// P&L 按渠道占比加权：平台单收阶梯价、再扣平台手续费 → 真实反映部分转嫁后的净收入。
 // Source of truth: Drive 菜品定价 sheet.
-// 2026-07-20: 炒粉调料实测 → 1.76/2.51；含小米辣2g@$5/lb → 1.78/2.54；干米粉130→140g → 猪肉炒粉1.82、牛肉炒粉2.58 (梅花肉$2.63/牛肩胛$6.05).
+const MK0 = { g: 0, u: 0, d: 0 };
 const DEFAULT_MAINS = [
-  { name: "江西精品猪肉炒粉", price: 14, cost: 1.82, qty: 10 },
-  { name: "江西精品牛肉炒粉", price: 16, cost: 2.58, qty: 5  },
-  { name: "江西三鲜泡粉",     price: 10, cost: 1.36, qty: 10 },
-  { name: "江西牛肉泡粉",     price: 16, cost: 3.92, qty: 15 },
-  { name: "天津黄汤牛肉拉面", price: 16, cost: 4.60, qty: 15 },
-  { name: "台式牛肉面",       price: 16, cost: 3.54, qty: 5  },
-  { name: "台式卤肉饭",       price: 14, cost: 2.29, qty: 8  },
+  { name: "江西精品猪肉炒粉", price: 14.99, mk: { g: 1, u: 2, d: 3 }, cost: 1.82, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 2.58, qty: 5  },
+  { name: "江西三鲜泡粉",     price: 9.99,  mk: { g: 1, u: 2, d: 3 }, cost: 1.36, qty: 10 },
+  { name: "江西牛肉泡粉",     price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 3.92, qty: 15 },
+  { name: "天津黄汤牛肉拉面", price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 4.60, qty: 15 },
+  { name: "台式牛肉面",       price: 16.99, mk: { g: 1, u: 2, d: 3 }, cost: 3.54, qty: 5  },
+  { name: "台式卤肉饭",       price: 14.99, mk: { g: 1, u: 2, d: 3 }, cost: 2.29, qty: 8  },
 ];
-// 小菜和饮料 (Sides & Drinks) — standalone, added to any order (attach-only).
+// 小菜和饮料 (Sides & Drinks) — standalone, attach-only. 平价，无平台加价 (mk=0).
 const DEFAULT_DRINKS = [
-  { name: "煎蛋",         price: 1.5, cost: 0.09, qty: 5 },
-  { name: "茶叶蛋",       price: 1.5, cost: 0.10, qty: 5 },
-  { name: "罐装可乐",     price: 2,   cost: 0.68, qty: 5 },
-  { name: "罐装Diet可乐", price: 2,   cost: 0.68, qty: 5 },
-  { name: "罐装雪碧",     price: 2,   cost: 0.68, qty: 3 },
-  { name: "罐装芬达",     price: 2,   cost: 0.87, qty: 3 },
+  { name: "葱油煎蛋",     price: 2.5, mk: MK0, cost: 0.09, qty: 5 },
+  { name: "茶叶蛋",       price: 2,   mk: MK0, cost: 0.10, qty: 5 },
+  { name: "罐装可乐",     price: 2.5, mk: MK0, cost: 0.68, qty: 5 },
+  { name: "罐装Diet可乐", price: 2.5, mk: MK0, cost: 0.68, qty: 5 },
+  { name: "罐装雪碧",     price: 2.5, mk: MK0, cost: 0.68, qty: 3 },
+  { name: "罐装芬达",     price: 2.5, mk: MK0, cost: 0.87, qty: 3 },
 ];
-// 加料 (dish-bound add-ons) — offered as options when ordering the matching dish (attach-only).
-// price = direct/base; qty = attach units/day. 2026-07-20 from 菜品定价 加料 section.
+// 加料 (dish-bound add-ons) — attach-only. 中价加料 +$0.5，贵价加料平价。(加小油菜 2026-07-20 删)
 const DEFAULT_ADDONS = [
-  { name: "加小油菜", price: 2,   cost: 0.19, qty: 4 },
-  { name: "加粉",     price: 2.5, cost: 0.50, qty: 3 },
-  { name: "加面",     price: 3,   cost: 0.92, qty: 2 },
-  { name: "加饭",     price: 2,   cost: 0.10, qty: 1 },
-  { name: "加三鲜",   price: 2.5, cost: 0.14, qty: 1 },
-  { name: "加猪肉丝", price: 3.5, cost: 0.58, qty: 1 },
-  { name: "加牛肉丝", price: 5,   cost: 1.33, qty: 1 },
-  { name: "加牛腩",   price: 6,   cost: 1.87, qty: 4 },
-  { name: "加卤肉",   price: 5,   cost: 1.80, qty: 1 },
+  { name: "加粉",     price: 2,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.50, qty: 3 },
+  { name: "加面",     price: 3,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.92, qty: 2 },
+  { name: "加饭",     price: 2,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.10, qty: 1 },
+  { name: "加三鲜",   price: 2,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.14, qty: 1 },
+  { name: "加猪肉丝", price: 3,   mk: { g: 0.5, u: 0.5, d: 0.5 }, cost: 0.58, qty: 1 },
+  { name: "加牛肉丝", price: 4.9, mk: MK0, cost: 1.33, qty: 1 },
+  { name: "加牛腩",   price: 4.9, mk: MK0, cost: 1.87, qty: 4 },
+  { name: "加卤肉",   price: 4.9, mk: MK0, cost: 1.80, qty: 1 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
@@ -70,7 +68,7 @@ const DEFAULT_EQUIPMENT = [
 ];
 
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
-// STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别 (2026-07-20: staple 1543→1568 炒粉米粉130→140g).
+// STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别.
 // NOTE: different basis than the order-based COGS above.
 const FOOD_COST_BY_CATEGORY = [
   { key: "cat.meat",   value: 4894 },
@@ -122,17 +120,48 @@ function mainQty(v) {
   return v.mains.reduce((s, d) => s + d.qty, 0);
 }
 
+// Per-channel price for a dish: pickup=price; platforms=price+markup.
+function channelPrice(d, chMk) {
+  const mk = d.mk || MK0;
+  return d.price + (chMk ? (mk[chMk] || 0) : 0);
+}
+
+// Daily revenue / platform fees / cogs, channel-weighted with 阶梯 markups.
+// 平台单按阶梯价收钱，手续费按各渠道费率算在(更高的)阶梯价上。
+function dailyTotals(v) {
+  const dishes = getDishes(v);
+  const sP = v.pctPickup   / 100, sG = v.pctGrubhub  / 100, sU = v.pctUberEats / 100, sD = v.pctDoorDash / 100;
+  const fP = v.commPickup  / 100, fG = v.commGrubhub / 100, fU = v.commUberEats / 100, fD = v.commDoorDash / 100;
+  let revenue = 0, fees = 0, cogs = 0;
+  dishes.forEach((d) => {
+    const pP = channelPrice(d, null);
+    const pG = channelPrice(d, "g");
+    const pU = channelPrice(d, "u");
+    const pD = channelPrice(d, "d");
+    const eff    = sP * pP        + sG * pG        + sU * pU        + sD * pD;
+    const effFee = sP * pP * fP   + sG * pG * fG   + sU * pU * fU   + sD * pD * fD;
+    revenue += d.qty * eff;
+    fees    += d.qty * effFee;
+    cogs    += d.qty * d.cost;
+  });
+  return { revenue, fees, cogs };
+}
+
 // ── Menu lists (mains + drinks + add-ons share the same row shape) ──
 function readMenu(bodyId) {
   const list = [];
   const body = $(bodyId);
   if (!body) return list;
   body.querySelectorAll(".menu-row").forEach((row) => {
+    let mk;
+    try { mk = JSON.parse(row.getAttribute("data-mk")) || { g: 0, u: 0, d: 0 }; }
+    catch (e) { mk = { g: 0, u: 0, d: 0 }; }
     list.push({
       name:  row.querySelector(".dish-name").value,
       price: parseFloat(row.querySelector(".dish-price").value) || 0,
       cost:  parseFloat(row.querySelector(".dish-cost").value)  || 0,
       qty:   parseFloat(row.querySelector(".dish-qty").value)   || 0,
+      mk:    mk,
     });
   });
   return list;
@@ -141,6 +170,7 @@ function readMenu(bodyId) {
 function makeMenuRow(dish) {
   const row = document.createElement("tr");
   row.className = "menu-row";
+  row.setAttribute("data-mk", JSON.stringify(dish.mk || { g: 0, u: 0, d: 0 }));
   row.innerHTML =
     `<td><input class="dish-name" type="text" value="" /></td>` +
     `<td><input class="dish-price" type="number" min="0" step="0.5" value="0" /></td>` +
@@ -234,30 +264,17 @@ function fmtPct(n) {
 // scaleOverride multiplies all quantities (used for sensitivity curve).
 function computePL(v, scaleOverride) {
   const scale = scaleOverride !== undefined ? scaleOverride : 1.0;
-  const dishes = getDishes(v);
 
   // "Orders" = main-dish orders only. Sides/drinks + add-ons attach to those orders.
   const ordersPerDay   = mainQty(v) * scale;
   const ordersPerMonth = ordersPerDay * v.daysPerWeek * WEEKS_PER_MONTH;
   const mainOrdersPerMonth = ordersPerMonth; // packaging basis (main orders)
 
-  // Revenue & COGS include mains + sides/drinks + add-ons.
-  const dailyRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
-  const dailyCogs    = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
-  const revenue = dailyRevenue * scale * v.daysPerWeek * WEEKS_PER_MONTH;
-  const cogs    = dailyCogs    * scale * v.daysPerWeek * WEEKS_PER_MONTH;
-
-  const pickupShare = v.pctPickup   / 100;
-  const ddShare     = v.pctDoorDash / 100;
-  const ueShare     = v.pctUberEats / 100;
-  const ghShare     = v.pctGrubhub  / 100;
-
-  // Platforms commission the whole ticket (incl. attached sides/drinks/add-ons).
-  const platformFees =
-    revenue * pickupShare * (v.commPickup   / 100) +
-    revenue * ddShare     * (v.commDoorDash / 100) +
-    revenue * ueShare     * (v.commUberEats / 100) +
-    revenue * ghShare     * (v.commGrubhub  / 100);
+  // Channel-weighted daily revenue / platform fees / cogs (阶梯定价).
+  const dt = dailyTotals(v);
+  const revenue      = dt.revenue * scale * v.daysPerWeek * WEEKS_PER_MONTH;
+  const cogs         = dt.cogs    * scale * v.daysPerWeek * WEEKS_PER_MONTH;
+  const platformFees = dt.fees    * scale * v.daysPerWeek * WEEKS_PER_MONTH;
 
   const packaging    = mainOrdersPerMonth * v.packagingPerOrder;
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
@@ -289,19 +306,11 @@ function computePL(v, scaleOverride) {
 
 // Break-even: scale factor k where profit = 0 → break-even MAIN orders/day.
 function computeBreakEven(v) {
-  const dishes           = getDishes(v);
   const mainOrdersPerDay = mainQty(v);
-  const dailyRevenue     = dishes.reduce((s, d) => s + d.qty * d.price, 0);
-  const dailyCogs        = dishes.reduce((s, d) => s + d.qty * d.cost,  0);
-
-  const blendedFeePct =
-    (v.pctPickup   / 100) * (v.commPickup   / 100) +
-    (v.pctDoorDash / 100) * (v.commDoorDash / 100) +
-    (v.pctUberEats / 100) * (v.commUberEats / 100) +
-    (v.pctGrubhub  / 100) * (v.commGrubhub  / 100);
+  const dt = dailyTotals(v);
 
   const contributionPerScale =
-    (dailyRevenue * (1 - blendedFeePct) - dailyCogs - v.packagingPerOrder * mainOrdersPerDay)
+    (dt.revenue - dt.fees - dt.cogs - v.packagingPerOrder * mainOrdersPerDay)
     * v.daysPerWeek * WEEKS_PER_MONTH;
 
   const labor        = v.numStaff * v.hourlyWage * v.hoursPerWeek * WEEKS_PER_MONTH;
@@ -319,7 +328,7 @@ function updateMixWarning(v) {
   $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? window.NoodleI18N.t("mix.warning") : "";
 }
 
-// Blended stats per category so categories don't skew each other's AOV / food-cost %.
+// Blended stats per category (base/直营 price basis).
 function renderCategoryTotals(dishes, qtyId, aovId, cogsId) {
   const totalQty     = dishes.reduce((s, d) => s + d.qty,           0);
   const totalRevenue = dishes.reduce((s, d) => s + d.qty * d.price, 0);
@@ -469,16 +478,16 @@ function renderSensitivityChart(v) {
 }
 
 // Platform Price Guide — items are ROWS, platforms are FIXED columns.
-// 堂食/direct column shows the base price; each platform column shows base ÷ (1 − fee).
+// 阶梯式：堂食=直营价；每个平台=直营价 + 该菜的平台加价 mk（不是全额转嫁手续费）。
 function renderPlatformPrices(v) {
   const t = window.NoodleI18N.t;
   const dishes = getDishes(v);
 
   const channels = [
-    { key: "pg.direct",        fee: v.commPickup   / 100, isCCfee: true  },
-    { key: "channel.grubhub",  fee: v.commGrubhub  / 100, isCCfee: false },
-    { key: "channel.ubereats", fee: v.commUberEats / 100, isCCfee: false },
-    { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false },
+    { key: "pg.direct",        fee: v.commPickup   / 100, isCCfee: true,  mk: null },
+    { key: "channel.grubhub",  fee: v.commGrubhub  / 100, isCCfee: false, mk: "g" },
+    { key: "channel.ubereats", fee: v.commUberEats / 100, isCCfee: false, mk: "u" },
+    { key: "channel.doordash", fee: v.commDoorDash / 100, isCCfee: false, mk: "d" },
   ];
 
   const headCells = [`<th class="pg-dish-head">${escHtml(t("sm.col.dish"))}</th>`];
@@ -500,10 +509,8 @@ function renderPlatformPrices(v) {
     channels.forEach((ch) => {
       if (d.price <= 0) {
         cells.push(`<td>—</td>`);
-      } else if (ch.isCCfee) {
-        cells.push(`<td>$${d.price.toFixed(2)}</td>`);
       } else {
-        cells.push(`<td>$${(d.price / (1 - ch.fee)).toFixed(2)}</td>`);
+        cells.push(`<td>$${channelPrice(d, ch.mk).toFixed(2)}</td>`);
       }
     });
     const tr = document.createElement("tr");
