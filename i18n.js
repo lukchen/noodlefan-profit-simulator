@@ -104,7 +104,7 @@
       "tab.results": "Results",
 
       "pg.title": "Platform Price Guide",
-      "pg.hint": "Recommended consumer-facing prices on each platform so the restaurant nets the same base price after commission. Formula: base ÷ (1 − fee%).",
+      "pg.hint": "Tiered platform pricing — rather than passing the full commission to customers, each platform lists a stepped markup over the base price (mains +$1/+$2/+$3 for Fantuan/Uber/DoorDash; sides & add-ons small or none).",
       "pg.col.channel": "Channel",
       "pg.col.fee": "Fee",
       "pg.col.price": "Listed Price",
@@ -255,7 +255,7 @@
       "tab.results": "结果",
 
       "pg.title": "各平台定价参考",
-      "pg.hint": "各渠道建议售价，确保扣除平台抽成后到手价与直营售价相同。计算公式：直营价 ÷ (1 − 抽成%)",
+      "pg.hint": "阶梯式平台定价 — 不把平台抽成全额转嫁给客人，而是在直营价基础上分级加价（主菜 饭团+$1 / Uber+$2 / DoorDash+$3；小菜和加料少量或不加）。",
       "pg.col.channel": "渠道",
       "pg.col.fee": "抽成",
       "pg.col.price": "消费者看到的价格",
