@@ -4,13 +4,12 @@ A single-page, no-build web app for modeling the economics of running **NoodleFa
 (Boston Chinese noodle/rice-noodle restaurant) out of a **CloudKitchens** ghost-kitchen
 unit — delivery and pickup only, no dine-in.
 
-Live demo: _add your GitHub Pages URL here after first deploy_
-(e.g. `https://<your-username>.github.io/noodlefan-profit-simulator/`)
+Live demo: https://lukchen.github.io/noodlefan-profit-simulator/
 
 ## What it models
 
 - **Order volume** — orders/day, days open/week, average order value (AOV)
-- **Channel mix** — % of orders via Direct Pickup, DoorDash, Uber Eats, Grubhub, each
+- **Channel mix** — % of orders via Direct Pickup, DoorDash, Uber Eats, Fantuan (饭团), each
   with its own commission rate
 - **Kitchen rent & utilities** — CloudKitchens monthly rent + CAM/utilities
 - **Food cost (COGS)** — as a % of revenue
@@ -28,10 +27,10 @@ auto-saves to your browser's local storage.
 
 - CloudKitchens doesn't publish list pricing for its Boston (Shirley St) location —
   rent/utilities defaults are rough placeholders. Get an actual quote and replace them.
-- Delivery commission defaults reflect publicly reported 2026 tiers: DoorDash
-  15/25/30% (+6% pickup), Uber Eats 20/25/30% (+7% pickup), Grubhub ~15–30%. Your
-  actual contracted rate may differ — update per channel.
-- Food cost 30% and packaging $0.90/order are typical fast-casual noodle-shop ranges.
+- Delivery commission defaults are set per channel in the app (DoorDash / Uber Eats /
+  Fantuan 饭团; Direct Pickup 0%). Your actual contracted rate may differ — update per channel.
+- Per-dish sell prices and food costs come from the Drive 菜品定价 / 成本 sheets (not a
+  flat %); packaging is costed per order. Update these from the current sheets.
 
 ## Running locally
 
