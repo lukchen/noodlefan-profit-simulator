@@ -16,16 +16,18 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v18";
+const STORAGE_KEY = "noodlefan-profit-sim-v19";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带 4 个可编辑价格 —
 //   price = 直营(pickup/自取)，pG = 饭团，pU = Uber，pD = DoorDash。
 // 平台单不把手续费全额转嫁给客人；各平台价在菜单表里直接编辑（不再有独立的定价参考表）。
 // P&L 按渠道占比加权：平台单收各自平台价、再扣该渠道手续费 → 真实反映部分转嫁后的净收入。
-// Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/成本/每日订单).
+// Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/成本/每日订单)。
+// 注: 菜单/网站上炒粉是一道菜(下单选猪/牛); 计算器里仍拆成猪肉/牛肉两行, 方便分开分析各自销量(2026-07-22 Eli)。
 const DEFAULT_MAINS = [
-  { name: "江西精品炒粉", price: 15.66, pG: 16.66, pU: 17.66, pD: 18.66, cost: 2.07, qty: 15 },
+  { name: "江西精品猪肉炒粉", price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, cost: 1.82, qty: 10 },
+  { name: "江西精品牛肉炒粉", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 2.58, qty: 5  },
   { name: "江西三鲜泡粉",     price: 9.99,  pG: 10.99, pU: 11.99, pD: 12.99, cost: 1.36, qty: 10 },
   { name: "江西牛肉泡粉",     price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 3.92, qty: 15 },
   { name: "天津黄汤牛肉拉面", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 4.60, qty: 15 },
