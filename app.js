@@ -3,8 +3,9 @@
 const FIELD_IDS = [
   "daysPerWeek",
   "pctPickup", "commPickup",
-  "pctDoorDash", "commDoorDash",
+  "pctFantuan", "commFantuan",
   "pctUberEats", "commUberEats",
+  "pctDoorDash", "commDoorDash",
   "pctGrubhub", "commGrubhub",
   "packagingPerOrder",
   "numStaff", "hourlyWage", "hoursPerWeek",
@@ -16,7 +17,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v22";
+const STORAGE_KEY = "noodlefan-profit-sim-v23";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带 4 个可编辑价格 —
@@ -120,13 +121,14 @@ function mainQty(v) {
 // 平台单按各自平台价收钱，手续费按各渠道费率算在该平台价上。
 function dailyTotals(v) {
   const dishes = getDishes(v);
-  const sP = v.pctPickup   / 100, sG = v.pctGrubhub  / 100, sU = v.pctUberEats / 100, sD = v.pctDoorDash / 100;
-  const fP = v.commPickup  / 100, fG = v.commGrubhub / 100, fU = v.commUberEats / 100, fD = v.commDoorDash / 100;
+  // 渠道: 自取 Pickup / 饭团 Fantuan(用饭团价 pG) / Uber / DoorDash / Grubhub(定价同 DoorDash, 用 pD)。
+  const sP = v.pctPickup / 100, sF = v.pctFantuan / 100, sU = v.pctUberEats / 100, sD = v.pctDoorDash / 100, sGH = v.pctGrubhub / 100;
+  const fP = v.commPickup / 100, fF = v.commFantuan / 100, fU = v.commUberEats / 100, fD = v.commDoorDash / 100, fGH = v.commGrubhub / 100;
   let revenue = 0, fees = 0, cogs = 0;
   dishes.forEach((d) => {
     const pP = d.price, pG = d.pG, pU = d.pU, pD = d.pD;
-    const eff    = sP * pP        + sG * pG        + sU * pU        + sD * pD;
-    const effFee = sP * pP * fP   + sG * pG * fG   + sU * pU * fU   + sD * pD * fD;
+    const eff    = sP * pP        + sF * pG        + sU * pU        + sD * pD        + sGH * pD;
+    const effFee = sP * pP * fP   + sF * pG * fF   + sU * pU * fU   + sD * pD * fD   + sGH * pD * fGH;
     revenue += d.qty * eff;
     fees    += d.qty * effFee;
     cogs    += d.qty * d.cost;
@@ -315,7 +317,7 @@ function computeBreakEven(v) {
 }
 
 function updateMixWarning(v) {
-  const total = v.pctPickup + v.pctDoorDash + v.pctUberEats + v.pctGrubhub;
+  const total = v.pctPickup + v.pctFantuan + v.pctUberEats + v.pctDoorDash + v.pctGrubhub;
   $("mixTotal").textContent = total.toFixed(0);
   $("mixWarning").textContent = Math.abs(total - 100) > 0.5 ? window.NoodleI18N.t("mix.warning") : "";
 }
