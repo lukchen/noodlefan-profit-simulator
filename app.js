@@ -16,7 +16,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v20";
+const STORAGE_KEY = "noodlefan-profit-sim-v21";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带 4 个可编辑价格 —
@@ -24,10 +24,9 @@ const WEEKS_PER_MONTH = 52 / 12;
 // 平台单不把手续费全额转嫁给客人；各平台价在菜单表里直接编辑（不再有独立的定价参考表）。
 // P&L 按渠道占比加权：平台单收各自平台价、再扣该渠道手续费 → 真实反映部分转嫁后的净收入。
 // Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/成本/每日订单)。
-// 注: 菜单/网站上炒粉是一道菜(下单选猪/牛); 计算器里仍拆成猪肉/牛肉两行, 方便分开分析各自销量(2026-07-22 Eli)。
+// 注: 炒粉只用猪肉(2026-07-22 Eli 定,取消牛肉选项/牛肉丝);全部炒粉单量归到这一行。
 const DEFAULT_MAINS = [
-  { name: "招牌江西炒粉(猪) Signature Fried Rice Noodle (Pork)", price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, cost: 1.82, qty: 10 },
-  { name: "招牌江西炒粉(牛) Signature Fried Rice Noodle (Beef)", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 2.58, qty: 5  },
+  { name: "招牌江西炒粉 Jiangxi Signature Fried Rice Noodle", price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, cost: 1.82, qty: 15 },
   { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 9.99,  pG: 10.99, pU: 11.99, pD: 12.99, cost: 1.36, qty: 10 },
   { name: "江西牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 3.92, qty: 15 },
   { name: "天津黄汤牛肉拉面 Golden Soup Beef Noodle", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, cost: 4.60, qty: 15 },
@@ -43,14 +42,13 @@ const DEFAULT_DRINKS = [
   { name: "雪碧 Sprite",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.68, qty: 3 },
   { name: "芬达 Fanta",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.87, qty: 3 },
 ];
-// 加料 — attach-only。中价加料平台 +$0.5，贵价加料平价。(加小油菜 2026-07-20 删)
+// 加料 — attach-only。中价加料平台 +$0.5，贵价加料平价。(加小油菜 2026-07-20 删；加牛肉丝 2026-07-22 删,炒粉不再有牛肉)
 const DEFAULT_ADDONS = [
   { name: "加粉 Extra Rice Noodles",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.50, qty: 3 },
   { name: "加面 Extra Noodles",     price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, cost: 0.92, qty: 2 },
   { name: "加饭 Extra Rice",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.10, qty: 1 },
   { name: "加三鲜 Extra Garden Mushroom",   price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, cost: 0.14, qty: 1 },
   { name: "加猪肉丝 Extra Shredded Pork", price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, cost: 0.58, qty: 1 },
-  { name: "加牛肉 Extra Beef", price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, cost: 1.33, qty: 1 },
   { name: "加牛腩 Extra Beef Brisket",   price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, cost: 1.87, qty: 4 },
   { name: "加卤肉 Extra Braised Pork",   price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, cost: 1.80, qty: 1 },
 ];
@@ -69,7 +67,7 @@ const DEFAULT_EQUIPMENT = [
 // Food-cost split by 采购清单 category (monthly procurement $, priced items only).
 // STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别.
 const FOOD_COST_BY_CATEGORY = [
-  { key: "cat.meat",   value: 4894 },
+  { key: "cat.meat",   value: 4812 },
   { key: "cat.staple", value: 1568 },
   { key: "cat.sauce",  value: 843 },
   { key: "cat.spice",  value: 254 },
