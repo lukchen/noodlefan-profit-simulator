@@ -17,19 +17,19 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v24";
+const STORAGE_KEY = "noodlefan-profit-sim-v25";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带可编辑价格 —
 //   price = 直营(pickup/自取)，pG = 饭团，pU = Uber，pD = DoorDash，pGH = Grubhub(默认=pD)。
 // 平台单不把手续费全额转嫁给客人；各平台价在菜单表里直接编辑。
 // P&L 按渠道占比加权：平台单收各自平台价、再扣该渠道手续费 → 真实反映部分转嫁后的净收入。
-// Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/成本/每日订单)。
+// Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/grubhub/成本/每日订单)。
 // 注: 炒粉只用猪肉(2026-07-22 Eli 定,取消牛肉选项/牛肉丝);全部炒粉单量归到这一行。
 const DEFAULT_MAINS = [
   { name: "招牌江西炒粉 Jiangxi Signature Fried Rice Noodle", price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.82, qty: 12 },
-  { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 9.99,  pG: 10.99, pU: 11.99, pD: 12.99, pGH: 12.99, cost: 1.36, qty: 8 },
-  { name: "江西牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.92, qty: 10 },
+  { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 9.99,  pG: 10.99, pU: 11.99, pD: 12.99, pGH: 12.99, cost: 1.40, qty: 8 },
+  { name: "江西牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.96, qty: 10 },
   { name: "天津黄汤牛肉拉面 Golden Soup Beef Noodle", price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 4.60, qty: 12 },
   { name: "台式牛肉面 Taiwanese Beef Noodle",       price: 16.99, pG: 17.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.54, qty: 5  },
   { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl",       price: 14.99, pG: 15.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 2.29, qty: 8  },
@@ -69,7 +69,7 @@ const DEFAULT_EQUIPMENT = [
 // STATIC — synced manually from the 采购清单 主表 SUMIF-by-类别.
 const FOOD_COST_BY_CATEGORY = [
   { key: "cat.meat",   value: 4812 },
-  { key: "cat.staple", value: 1568 },
+  { key: "cat.staple", value: 1609 },
   { key: "cat.sauce",  value: 843 },
   { key: "cat.spice",  value: 254 },
   { key: "cat.drink",  value: 330 },
