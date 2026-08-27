@@ -17,7 +17,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v30";
+const STORAGE_KEY = "noodlefan-profit-sim-v31";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带可编辑价格 —
@@ -27,11 +27,11 @@ const WEEKS_PER_MONTH = 52 / 12;
 // Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/grubhub/成本/每日订单)。
 // 注: 炒粉只用猪肉(2026-07-22 Eli 定,取消牛肉选项/牛肉丝);全部炒粉单量归到这一行。
 // 注: 牛腩/五花/梅花 2026-07-27 改用 US Foods 便宜价($5.31/$3.46/$2.02),相关菜品 cost 已下调。
-// 注: 炒粉每份蚝油 2026-08 从 1/64→1/32 cup(+4.8g),cost 1.69→1.70、sauce +$4。
+// 注: 炒粉 2026-08-26 取消蚝油(全菜单已无人用),cost 1.70→1.69;蚝油已从采购清单移除。
 const DEFAULT_MAINS = [
-  { name: "地道江西炒粉 Authentic Jiangxi Fried Rice Noodle", price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.70, qty: 12 },
-  { name: "招牌江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 9.99,  pG: 11.99, pU: 11.99, pD: 12.99, pGH: 12.99, cost: 1.40, qty: 8 },
-  { name: "招牌江西牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.73, qty: 10 },
+  { name: "招牌江西炒粉 Authentic Jiangxi Fried Rice Noodle", price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.69, qty: 12 },
+  { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 9.99,  pG: 11.99, pU: 11.99, pD: 12.99, pGH: 12.99, cost: 1.40, qty: 8 },
+  { name: "江西香辣牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.73, qty: 10 },
   { name: "天津黄汤牛肉拉面 Golden Soup Beef Noodle", price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 4.37, qty: 12 },
   { name: "台式牛肉面 Taiwanese Beef Noodle",       price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.31, qty: 5  },
   { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl",       price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.91, qty: 8  },
@@ -45,15 +45,18 @@ const DEFAULT_DRINKS = [
   { name: "雪碧 Sprite",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.68, qty: 3 },
   { name: "芬达 Fanta",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.87, qty: 3 },
 ];
-// 加料 — attach-only。中价加料平台 +$0.5，贵价加料平价。(加小油菜 2026-07-20 删；加牛肉丝 2026-07-22 删,炒粉不再有牛肉)
+// 加料 — attach-only。2026-08-25 起 加三鲜/加猪肉丝/加牛腩/加卤肉 各平台同价；新增 加鸡蛋 $1.5、加蔬菜 $2(全渠道同价)。
+// (加小油菜 2026-07-20 删；加牛肉丝 2026-07-22 删,炒粉不再有牛肉)  ⚠️加鸡蛋/加蔬菜的 cost 为估算值(0.09/0.30),待进货价确认。
 const DEFAULT_ADDONS = [
   { name: "加粉 Extra Rice Noodles",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.50, qty: 3 },
   { name: "加面 Extra Noodles",     price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, pGH: 3.5, cost: 0.92, qty: 2 },
   { name: "加饭 Extra Rice",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.10, qty: 1 },
-  { name: "加三鲜 Extra Garden Mushroom",   price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
-  { name: "加猪肉丝 Extra Shredded Pork", price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, pGH: 3.5, cost: 0.45, qty: 1 },
-  { name: "加牛腩 Extra Beef Brisket",   price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, pGH: 4.9, cost: 1.64, qty: 4 },
-  { name: "加卤肉 Extra Braised Pork",   price: 4.9, pG: 4.9, pU: 4.9, pD: 4.9, pGH: 4.9, cost: 1.42, qty: 1 },
+  { name: "加三鲜 Extra Garden Mushroom",   price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
+  { name: "加猪肉丝 Extra Shredded Pork", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.45, qty: 1 },
+  { name: "加牛腩 Extra Beef Brisket",   price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
+  { name: "加卤肉 Extra Braised Pork",   price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.42, qty: 1 },
+  { name: "加鸡蛋 Extra Egg",       price: 1.5, pG: 1.5, pU: 1.5, pD: 1.5, pGH: 1.5, cost: 0.09, qty: 3 },
+  { name: "加蔬菜 Extra Vegetables", price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.30, qty: 3 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
