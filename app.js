@@ -17,7 +17,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v31";
+const STORAGE_KEY = "noodlefan-profit-sim-v32";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带可编辑价格 —
@@ -36,27 +36,27 @@ const DEFAULT_MAINS = [
   { name: "台式牛肉面 Taiwanese Beef Noodle",       price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.31, qty: 5  },
   { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl",       price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.91, qty: 8  },
 ];
-// 小菜和饮料 — attach-only。平价（各平台同价）。
+// 小菜和饮料 — attach-only。平价（各平台同价）。2026-08 芬达下架,新增矿泉水 $2。
 const DEFAULT_DRINKS = [
-  { name: "葱油煎蛋 Scallion Oil Fried Egg",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.09, qty: 5 },
+  { name: "葱油煎蛋 Scallion Oil Fried Egg", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.09, qty: 5 },
   { name: "茶叶蛋 Tea Egg",       price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.10, qty: 5 },
-  { name: "可乐 Coke",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.68, qty: 5 },
-  { name: "Diet可乐 Diet Coke", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.68, qty: 5 },
+  { name: "矿泉水 Water",         price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.25, qty: 2 },
+  { name: "可乐 Coke",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.68, qty: 3 },
+  { name: "Diet可乐 Diet Coke", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.68, qty: 3 },
   { name: "雪碧 Sprite",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.68, qty: 3 },
-  { name: "芬达 Fanta",     price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.87, qty: 3 },
 ];
-// 加料 — attach-only。2026-08-25 起 加三鲜/加猪肉丝/加牛腩/加卤肉 各平台同价；新增 加鸡蛋 $1.5、加蔬菜 $2(全渠道同价)。
-// (加小油菜 2026-07-20 删；加牛肉丝 2026-07-22 删,炒粉不再有牛肉)  ⚠️加鸡蛋/加蔬菜的 cost 为估算值(0.09/0.30),待进货价确认。
+// 加料 — attach-only。2026-08 起全部加料【各渠道同价】(与菜品定价表一致);新增 加鸡蛋 $1.5、加蔬菜 $2。
+// (加小油菜 2026-07-20 删；加牛肉丝 2026-07-22 删,炒粉不再有牛肉) ⚠️加鸡蛋 0.09 / 加蔬菜 0.20 / 矿泉水 0.25 为估算成本,待进货价确认。
 const DEFAULT_ADDONS = [
-  { name: "加粉 Extra Rice Noodles",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.50, qty: 3 },
-  { name: "加面 Extra Noodles",     price: 3,   pG: 3.5, pU: 3.5, pD: 3.5, pGH: 3.5, cost: 0.92, qty: 2 },
-  { name: "加饭 Extra Rice",     price: 2,   pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.10, qty: 1 },
-  { name: "加三鲜 Extra Garden Mushroom",   price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
+  { name: "加粉 Extra Rice Noodles", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.50, qty: 3 },
+  { name: "加面 Extra Noodles",      price: 3.5, pG: 3.5, pU: 3.5, pD: 3.5, pGH: 3.5, cost: 0.92, qty: 2 },
+  { name: "加饭 Extra Rice",         price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.10, qty: 1 },
+  { name: "加三鲜 Extra Garden Mushroom", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
   { name: "加猪肉丝 Extra Shredded Pork", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.45, qty: 1 },
-  { name: "加牛腩 Extra Beef Brisket",   price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
-  { name: "加卤肉 Extra Braised Pork",   price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.42, qty: 1 },
-  { name: "加鸡蛋 Extra Egg",       price: 1.5, pG: 1.5, pU: 1.5, pD: 1.5, pGH: 1.5, cost: 0.09, qty: 3 },
-  { name: "加蔬菜 Extra Vegetables", price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.30, qty: 3 },
+  { name: "加牛腩 Extra Beef Brisket",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
+  { name: "加卤肉 Extra Braised Pork",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.42, qty: 1 },
+  { name: "加鸡蛋 Extra Egg",        price: 1.5, pG: 1.5, pU: 1.5, pD: 1.5, pGH: 1.5, cost: 0.09, qty: 3 },
+  { name: "加蔬菜 Extra Vegetables", price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.20, qty: 3 },
 ];
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
