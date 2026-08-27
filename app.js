@@ -17,7 +17,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v33";
+const STORAGE_KEY = "noodlefan-profit-sim-v34";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带可编辑价格 —
@@ -27,10 +27,11 @@ const WEEKS_PER_MONTH = 52 / 12;
 // Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/grubhub/成本/每日订单)。
 // 注: 炒粉只用猪肉(2026-07-22 Eli 定,取消牛肉选项/牛肉丝);全部炒粉单量归到这一行。
 // 注: 牛腩/五花/梅花 2026-07-27 改用 US Foods 便宜价($5.31/$3.46/$2.02),相关菜品 cost 已下调。
+// 注: 炒粉 2026-08-27 重新标定用量:包菜75→100g;盐/味精/鸡精/麻辣鲜/辣椒面/生抽/老抽均上调,cost 1.69→1.88。
 // 注: 江西三鲜泡粉 2026-08-27 全渠道 +$3(直营9.99→12.99),不再作为最低价引流锚点。
 // 注: 炒粉 2026-08-26 取消蚝油(全菜单已无人用),cost 1.70→1.69;蚝油已从采购清单移除。
 const DEFAULT_MAINS = [
-  { name: "招牌江西炒粉 Authentic Jiangxi Fried Rice Noodle", price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.69, qty: 12 },
+  { name: "招牌江西炒粉 Authentic Jiangxi Fried Rice Noodle", price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.88, qty: 12 },
   { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 12.99, pG: 14.99, pU: 14.99, pD: 15.99, pGH: 15.99, cost: 1.40, qty: 8 },
   { name: "江西香辣牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.73, qty: 10 },
   { name: "天津黄汤牛肉拉面 Golden Soup Beef Noodle", price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 4.37, qty: 12 },
