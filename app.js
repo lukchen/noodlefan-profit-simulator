@@ -17,7 +17,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v35";
+const STORAGE_KEY = "noodlefan-profit-sim-v36";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带可编辑价格 —
@@ -27,6 +27,7 @@ const WEEKS_PER_MONTH = 52 / 12;
 // Source of truth: Drive 菜品定价 sheet (菜名/直营/饭团/uber/doordash/grubhub/成本/每日订单)。
 // 注: 炒粉只用猪肉(2026-07-22 Eli 定,取消牛肉选项/牛肉丝);全部炒粉单量归到这一行。
 // 注: 牛腩/五花/梅花 2026-07-27 改用 US Foods 便宜价($5.31/$3.46/$2.02),相关菜品 cost 已下调。
+// 注: 卤肉饭 2026-08-27 每份五花统一为 200g(原文档三处写180g),cost 1.91→2.08;加卤肉同步 1.42→1.59;一锅红葱酥 288→320g。
 // 注: 三鲜泡粉 2026-08-27 定味量重标:盐4.5g/味精2g/白胡椒1.2g,新增鸡精1g,cost 1.40→1.41。
 // 注: 炒粉 2026-08-27 重新标定用量:包菜75→100g;盐/味精/鸡精/麻辣鲜/辣椒面/生抽/老抽均上调,cost 1.69→1.88。
 // 注: 江西三鲜泡粉 2026-08-27 全渠道 +$3(直营9.99→12.99),不再作为最低价引流锚点。
@@ -37,7 +38,7 @@ const DEFAULT_MAINS = [
   { name: "江西香辣牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.73, qty: 10 },
   { name: "天津黄汤牛肉拉面 Golden Soup Beef Noodle", price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 4.37, qty: 12 },
   { name: "台式牛肉面 Taiwanese Beef Noodle",       price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.31, qty: 5  },
-  { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl",       price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.91, qty: 8  },
+  { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl",       price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 2.08, qty: 8  },
 ];
 // 小菜和饮料 — attach-only。平价（各平台同价）。2026-08 芬达下架,新增矿泉水 $2。
 const DEFAULT_DRINKS = [
@@ -57,7 +58,7 @@ const DEFAULT_ADDONS = [
   { name: "加三鲜 Extra Garden Mushroom", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
   { name: "加猪肉丝 Extra Shredded Pork", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.45, qty: 1 },
   { name: "加牛腩 Extra Beef Brisket",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
-  { name: "加卤肉 Extra Braised Pork",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.42, qty: 1 },
+  { name: "加卤肉 Extra Braised Pork",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.59, qty: 1 },
   { name: "加鸡蛋 Extra Egg",        price: 1.5, pG: 1.5, pU: 1.5, pD: 1.5, pGH: 1.5, cost: 0.09, qty: 3 },
   { name: "加蔬菜 Extra Vegetables", price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.20, qty: 3 },
 ];
