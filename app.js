@@ -17,7 +17,7 @@ const FIELD_IDS = [
 ];
 
 const DEFAULTS = {};
-const STORAGE_KEY = "noodlefan-profit-sim-v38";
+const STORAGE_KEY = "noodlefan-profit-sim-v39";
 const WEEKS_PER_MONTH = 52 / 12;
 
 // 阶梯式平台定价 (2026-07-20 Eli): 每道菜直接带可编辑价格 —
@@ -59,7 +59,7 @@ const DEFAULT_ADDONS = [
   { name: "加面 Extra Noodles",      price: 3.5, pG: 3.5, pU: 3.5, pD: 3.5, pGH: 3.5, cost: 0.92, qty: 2 },
   { name: "加饭 Extra Rice",         price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.10, qty: 1 },
   { name: "加三鲜 Extra Garden Mushroom", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
-  { name: "加猪肉丝 Extra Shredded Pork", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.45, qty: 1 },
+  { name: "加额外肉丝 Extra Shredded Pork", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.45, qty: 1 },
   { name: "加牛腩 Extra Beef Brisket",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
   { name: "加卤肉 Extra Braised Pork",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.59, qty: 1 },
   { name: "加鸡蛋 Extra Egg",        price: 1.5, pG: 1.5, pU: 1.5, pD: 1.5, pGH: 1.5, cost: 0.09, qty: 3 },
