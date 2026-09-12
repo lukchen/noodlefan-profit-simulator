@@ -37,12 +37,13 @@ const WEEKS_PER_MONTH = 52 / 12;
 // 注: 江西三鲜泡粉 2026-08-27 全渠道 +$3(直营9.99→12.99),不再作为最低价引流锚点。
 // 注: 炒粉 2026-08-26 取消蚝油(全菜单已无人用),cost 1.70→1.69;蚝油已从采购清单移除。
 const DEFAULT_MAINS = [
-  { name: "招牌江西炒粉 Authentic Jiangxi Fried Rice Noodle", price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 1.76, qty: 12 },
-  { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup",     price: 12.99, pG: 14.99, pU: 14.99, pD: 15.99, pGH: 15.99, cost: 1.51, qty: 8 },
-  { name: "江西香辣牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup",     price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.73, qty: 10 },
-  { name: "天津黄汤牛肉拉面 Golden Curry Beef Noodle", price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 4.37, qty: 12 },
-  { name: "台式牛肉面 Taiwanese Beef Noodle",       price: 16.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.31, qty: 5  },
-  { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl",       price: 14.99, pG: 16.99, pU: 16.99, pD: 17.99, pGH: 17.99, cost: 2.08, qty: 8  },
+  { name: "招牌江西炒粉 Authentic Jiangxi Fried Rice Noodle", price: 15.99, pG: 16.990000000000002, pU: 16.990000000000002, pD: 17.990000000000002, pGH: 17.990000000000002, cost: 1.76, qty: 12 },
+  { name: "江西三鲜泡粉 Jiangxi Garden Mushroom Rice Noodle Soup", price: 13.99, pG: 14.99, pU: 14.99, pD: 15.99, pGH: 15.99, cost: 1.51, qty: 8 },
+  { name: "江西香辣牛肉泡粉 Jiangxi Spicy Beef Rice Noodle Soup", price: 17.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.73, qty: 10 },
+  { name: "天津黄汤牛肉拉面 Golden Curry Beef Noodle", price: 17.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 4.37, qty: 12 },
+  { name: "台式牛肉面 Taiwanese Beef Noodle", price: 17.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.31, qty: 5 },
+  { name: "台北夜市卤肉饭 Taiwanese Braised Pork Rice Bowl", price: 15.99, pG: 16.990000000000002, pU: 16.990000000000002, pD: 17.990000000000002, pGH: 17.990000000000002, cost: 2.08, qty: 8 },
+  { name: "天津羊杂汤 Tianjin Lamb & Offal Soup", price: 23.99, pG: 23.99, pU: 23.99, pD: 24.99, pGH: 24.99, cost: 9.99, qty: 2 },
 ];
 // 小菜和饮料 — attach-only。平价（各平台同价）。2026-08 芬达下架,新增矿泉水 $2。
 const DEFAULT_DRINKS = [
@@ -61,12 +62,45 @@ const DEFAULT_ADDONS = [
   { name: "加饭 Extra Rice",         price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.10, qty: 1 },
   { name: "加三鲜 Extra Garden Mushroom", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.14, qty: 1 },
   { name: "加额外肉丝 Extra Shredded Pork", price: 2.5, pG: 2.5, pU: 2.5, pD: 2.5, pGH: 2.5, cost: 0.45, qty: 1 },
-  { name: "加牛腩 Extra Beef Brisket",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
+  { name: "加牛肉 Extra Beef        ",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.64, qty: 4 },
   { name: "加卤肉 Extra Braised Pork",    price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.59, qty: 1 },
   { name: "加鸡蛋 Extra Egg",        price: 1.5, pG: 1.5, pU: 1.5, pD: 1.5, pGH: 1.5, cost: 0.09, qty: 3 },
   { name: "加蔬菜 Extra Vegetables", price: 2,   pG: 2,   pU: 2,   pD: 2,   pGH: 2,   cost: 0.20, qty: 3 },
   { name: "加火腿肠 Extra Ham Sausage", price: 3, pG: 3, pU: 3, pD: 3, pGH: 3, cost: 0.39, qty: 1 },
+  { name: "加豆腐结 Extra Tofu Knots", price: 3, pG: 3, pU: 3, pD: 3, pGH: 3, cost: 0.77, qty: 2 },
+  { name: "加牛肉丸 Extra Beef Balls", price: 4.5, pG: 4.5, pU: 4.5, pD: 4.5, pGH: 4.5, cost: 1.63, qty: 2 },
 ];
+
+// 套餐 — 2026-09 新增。渠道加价:CK同直营,饭团/Uber +$1,DoorDash/Grubhub +$2。
+const DEFAULT_COMBOS = [
+  { name: "招牌江西炒粉套餐·火腿肠", price: 18.99, pG: 19.99, pU: 19.99, pD: 20.99, pGH: 20.99, cost: 2.83, qty: 1 },
+  { name: "江西香辣牛肉泡粉套餐·豆腐结", price: 20.99, pG: 21.99, pU: 21.99, pD: 22.99, pGH: 22.99, cost: 5.18, qty: 1 },
+  { name: "江西香辣牛肉泡粉套餐·牛肉丸", price: 21.99, pG: 22.99, pU: 22.99, pD: 23.99, pGH: 23.99, cost: 6.04, qty: 1 },
+  { name: "江西香辣牛肉泡粉套餐·全家福", price: 24.99, pG: 25.99, pU: 25.99, pD: 26.99, pGH: 26.99, cost: 6.81, qty: 1 },
+  { name: "江西三鲜泡粉套餐·豆腐结", price: 16.99, pG: 17.99, pU: 17.99, pD: 18.99, pGH: 18.99, cost: 2.96, qty: 1 },
+  { name: "江西三鲜泡粉套餐·牛肉丸", price: 17.99, pG: 18.99, pU: 18.99, pD: 19.99, pGH: 19.99, cost: 3.82, qty: 1 },
+  { name: "江西三鲜泡粉套餐·全家福", price: 20.99, pG: 21.99, pU: 21.99, pD: 22.99, pGH: 22.99, cost: 4.59, qty: 1 },
+  { name: "天津黄汤牛肉拉面套餐·豆腐结", price: 21.99, pG: 22.99, pU: 22.99, pD: 23.99, pGH: 23.99, cost: 5.82, qty: 1 },
+  { name: "天津黄汤牛肉拉面套餐·牛肉丸", price: 22.99, pG: 23.99, pU: 23.99, pD: 24.99, pGH: 24.99, cost: 6.68, qty: 1 },
+  { name: "天津黄汤牛肉拉面套餐·全家福", price: 24.99, pG: 25.99, pU: 25.99, pD: 26.99, pGH: 26.99, cost: 7.45, qty: 1 },
+  { name: "台式牛肉面套餐·豆腐结", price: 20.99, pG: 21.99, pU: 21.99, pD: 22.99, pGH: 22.99, cost: 4.76, qty: 1 },
+  { name: "台式牛肉面套餐·牛肉丸", price: 21.99, pG: 22.99, pU: 22.99, pD: 23.99, pGH: 23.99, cost: 5.62, qty: 1 },
+  { name: "台式牛肉面套餐·全家福", price: 24.99, pG: 25.99, pU: 25.99, pD: 26.99, pGH: 26.99, cost: 6.39, qty: 1 },
+  { name: "台北夜市卤肉饭套餐·豆腐结", price: 18.99, pG: 19.99, pU: 19.99, pD: 20.99, pGH: 20.99, cost: 3.53, qty: 1 },
+  { name: "天津羊杂汤套餐·豆腐结", price: 26.99, pG: 27.99, pU: 27.99, pD: 28.99, pGH: 28.99, cost: 11.44, qty: 1 },
+  { name: "天津羊杂汤套餐·牛肉丸", price: 27.99, pG: 28.99, pU: 28.99, pD: 29.99, pGH: 29.99, cost: 12.3, qty: 1 },
+  { name: "天津羊杂汤套餐·全家福", price: 29.99, pG: 30.99, pU: 30.99, pD: 31.99, pGH: 31.99, cost: 13.07, qty: 1 },
+];
+const DEFAULT_COMBOS2 = [
+  { name: "① 江西兄弟套餐", price: 34.99, pG: 35.99, pU: 35.99, pD: 36.99, pGH: 36.99, cost: 6.6, qty: 1 },
+  { name: "② 台北姐妹花套餐", price: 34.99, pG: 35.99, pU: 35.99, pD: 36.99, pGH: 36.99, cost: 6.75, qty: 1 },
+  { name: "③ 赣味双拼套餐", price: 34.99, pG: 35.99, pU: 35.99, pD: 36.99, pGH: 36.99, cost: 6.85, qty: 1 },
+  { name: "④ 走南闯北套餐", price: 34.99, pG: 35.99, pU: 35.99, pD: 36.99, pGH: 36.99, cost: 7.49, qty: 1 },
+  { name: "⑤ 海峡双牛套餐", price: 37.99, pG: 38.99, pU: 38.99, pD: 39.99, pGH: 39.99, cost: 8.4, qty: 1 },
+  { name: "⑥ 粉面双牛套餐", price: 37.99, pG: 38.99, pU: 38.99, pD: 39.99, pGH: 39.99, cost: 9.46, qty: 1 },
+];
+// 套餐并入主菜表参与营收/成本测算（与菜品定价表口径一致，每个套餐默认 1 份/天）
+DEFAULT_MAINS.push(...DEFAULT_COMBOS, ...DEFAULT_COMBOS2)
 
 // Kitchen equipment is a dynamic list: each item has a name, unit price, and quantity.
 const DEFAULT_EQUIPMENT = [
